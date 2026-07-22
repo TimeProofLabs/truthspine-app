@@ -1,0 +1,40 @@
+name: Product problem
+description: Report a reproducible TruthSpine problem.
+title: "[Problem]: "
+labels: ["needs-triage"]
+body:
+  - type: markdown
+    attributes:
+      value: Do not include secrets, private source code, license keys, or private project content.
+  - type: input
+    id: version
+    attributes:
+      label: TruthSpine version
+      placeholder: 0.1.0
+    validations:
+      required: true
+  - type: dropdown
+    id: operating-system
+    attributes:
+      label: Operating system
+      options: [Windows, macOS, Linux]
+    validations:
+      required: true
+  - type: input
+    id: connector
+    attributes:
+      label: Workspace or connector
+      placeholder: Codex, VS Code, Claude Desktop, or another supported workspace
+  - type: textarea
+    id: steps
+    attributes:
+      label: What happened?
+      description: Include the smallest safe set of steps that reproduces the problem.
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: What did you expect?
+    validations:
+      required: true

@@ -1,0 +1,8 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Questions and ideas
+    url: https://github.com/TimeProofLabs/truthspine-app/discussions
+    about: Ask for help or discuss a product idea.
+  - name: Private support
+    url: mailto:support@timeprooflabs.com
+    about: Use email when your report contains private project information.

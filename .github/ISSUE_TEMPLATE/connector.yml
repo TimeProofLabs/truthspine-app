@@ -1,0 +1,24 @@
+name: Connector request or problem
+description: Tell us where you want TruthSpine to work or where a connection failed.
+title: "[Connector]: "
+labels: ["connector"]
+body:
+  - type: input
+    id: workspace
+    attributes:
+      label: Workspace, IDE, or chat
+    validations:
+      required: true
+  - type: dropdown
+    id: state
+    attributes:
+      label: Request type
+      options: [Existing connector problem, New connector request]
+    validations:
+      required: true
+  - type: textarea
+    id: details
+    attributes:
+      label: What should TruthSpine help you do there?
+    validations:
+      required: true
