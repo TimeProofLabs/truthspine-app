@@ -3,27 +3,19 @@
   "assets": [
     {
       "file": "truthspine-0.1.0-windows-x64.zip",
-      "sha256": "4770a22bd8525e8959ba3ae5634b0fff6d5f28b7098f3137ffe834707cca3492"
+      "sha256": "53654fcd5baa8da9e45e7e51fa4902a16cd1a3f7f3c9c88a2b24a8ed75803769"
     },
     {
       "file": "truthspine-0.1.0-macos-x64.tar.gz",
-      "sha256": "f06264151ea017e0d2e68b8455c061037c1dcc5daecc8b0aa46ec65214a41234"
+      "sha256": "90f48990af7df445f392fbdc2eb550d400d5a41f8a4517f9f1ae7efcea5477b8"
     },
     {
       "file": "truthspine-0.1.0-macos-arm64.tar.gz",
-      "sha256": "5f210ff7000f6ea7e8292d7040a97811baaf087f4043bd8263a41a94841878c4"
+      "sha256": "0d16b376e6afbe19f91ba50e32f1d765ac024195e0580a3efe5bb9fae22ffa84"
     },
     {
       "file": "truthspine-0.1.0-linux-x64.tar.gz",
-      "sha256": "e3391fdba88014ee41c3e83d22679c256687cf8cc0333e199021b07bb32d99ca"
-    },
-    {
-      "file": "truthspine-vscode-0.1.1.vsix",
-      "sha256": "dd5bc80dae4f68c6480085dc63353766637c26136e4e46d28e532ed934ea3830"
-    },
-    {
-      "file": "truthspine-jetbrains-0.1.1.zip",
-      "sha256": "a8672248fa8497d9ea476b73ad041e625026edf5bd68bb722b0a3205f0563293"
+      "sha256": "7687bb5642a897523876e8d409f07d97f386f7deddcb10ccf89755daa339113f"
     }
   ]
 }
