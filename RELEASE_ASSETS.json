@@ -3,23 +3,23 @@
   "assets": [
     {
       "file": "truthspine-0.1.0-windows-x64.zip",
-      "sha256": "53654fcd5baa8da9e45e7e51fa4902a16cd1a3f7f3c9c88a2b24a8ed75803769"
+      "sha256": "8fcc4813455f296e7c865ca71244a567173b947eda4593ed55aba802cd221a49"
     },
     {
       "file": "truthspine-0.1.0-macos-x64.tar.gz",
-      "sha256": "90f48990af7df445f392fbdc2eb550d400d5a41f8a4517f9f1ae7efcea5477b8"
+      "sha256": "c4cb89bc4d0d8eaf33df877ba4ba8982038c0d1c1991564ed5e8d6f2c7866d58"
     },
     {
       "file": "truthspine-0.1.0-macos-arm64.tar.gz",
-      "sha256": "0d16b376e6afbe19f91ba50e32f1d765ac024195e0580a3efe5bb9fae22ffa84"
+      "sha256": "59b1fd58c8c4e442136f5398cbcf829fa3f1c5d8f92c65c5fbf2803220949251"
     },
     {
       "file": "truthspine-0.1.0-linux-x64.tar.gz",
-      "sha256": "7687bb5642a897523876e8d409f07d97f386f7deddcb10ccf89755daa339113f"
+      "sha256": "4ec88573e3957ff906fd500e4b2c44a06098dc169921f3e9cc63ae4a88c7072a"
     },
     {
       "file": "truthspine-vscode-0.1.1.vsix",
-      "sha256": "56d5315f16a09ca5ff4453b68a876a3b48a18c06d09f15cda468d2d1fd585f04"
+      "sha256": "0ba6bf520ccd7684ecc612b2d79111287cc60c9f0ae2e8dbd112399f98feb1af"
     },
     {
       "file": "truthspine-jetbrains-0.1.1.zip",

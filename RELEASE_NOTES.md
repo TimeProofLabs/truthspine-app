@@ -19,14 +19,14 @@ Try TruthSpine free for 14 days. Read the current setup, security, and privacy i
 
 ## SHA-256 checksums
 
-`53654fcd5baa8da9e45e7e51fa4902a16cd1a3f7f3c9c88a2b24a8ed75803769  truthspine-0.1.0-windows-x64.zip`
+`8fcc4813455f296e7c865ca71244a567173b947eda4593ed55aba802cd221a49  truthspine-0.1.0-windows-x64.zip`
 
-`90f48990af7df445f392fbdc2eb550d400d5a41f8a4517f9f1ae7efcea5477b8  truthspine-0.1.0-macos-x64.tar.gz`
+`c4cb89bc4d0d8eaf33df877ba4ba8982038c0d1c1991564ed5e8d6f2c7866d58  truthspine-0.1.0-macos-x64.tar.gz`
 
-`0d16b376e6afbe19f91ba50e32f1d765ac024195e0580a3efe5bb9fae22ffa84  truthspine-0.1.0-macos-arm64.tar.gz`
+`59b1fd58c8c4e442136f5398cbcf829fa3f1c5d8f92c65c5fbf2803220949251  truthspine-0.1.0-macos-arm64.tar.gz`
 
-`7687bb5642a897523876e8d409f07d97f386f7deddcb10ccf89755daa339113f  truthspine-0.1.0-linux-x64.tar.gz`
+`4ec88573e3957ff906fd500e4b2c44a06098dc169921f3e9cc63ae4a88c7072a  truthspine-0.1.0-linux-x64.tar.gz`
 
-`56d5315f16a09ca5ff4453b68a876a3b48a18c06d09f15cda468d2d1fd585f04  truthspine-vscode-0.1.1.vsix`
+`0ba6bf520ccd7684ecc612b2d79111287cc60c9f0ae2e8dbd112399f98feb1af  truthspine-vscode-0.1.1.vsix`
 
 `a8672248fa8497d9ea476b73ad041e625026edf5bd68bb722b0a3205f0563293  truthspine-jetbrains-0.1.1.zip`
