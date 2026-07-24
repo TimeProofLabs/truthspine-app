@@ -26,3 +26,7 @@ Try TruthSpine free for 14 days. Read the current setup, security, and privacy i
 `0d16b376e6afbe19f91ba50e32f1d765ac024195e0580a3efe5bb9fae22ffa84  truthspine-0.1.0-macos-arm64.tar.gz`
 
 `7687bb5642a897523876e8d409f07d97f386f7deddcb10ccf89755daa339113f  truthspine-0.1.0-linux-x64.tar.gz`
+
+`56d5315f16a09ca5ff4453b68a876a3b48a18c06d09f15cda468d2d1fd585f04  truthspine-vscode-0.1.1.vsix`
+
+`a8672248fa8497d9ea476b73ad041e625026edf5bd68bb722b0a3205f0563293  truthspine-jetbrains-0.1.1.zip`
