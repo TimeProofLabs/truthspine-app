@@ -16,6 +16,14 @@
     {
       "file": "truthspine-0.1.0-linux-x64.tar.gz",
       "sha256": "e3391fdba88014ee41c3e83d22679c256687cf8cc0333e199021b07bb32d99ca"
+    },
+    {
+      "file": "truthspine-vscode-0.1.1.vsix",
+      "sha256": "dd5bc80dae4f68c6480085dc63353766637c26136e4e46d28e532ed934ea3830"
+    },
+    {
+      "file": "truthspine-jetbrains-0.1.1.zip",
+      "sha256": "a8672248fa8497d9ea476b73ad041e625026edf5bd68bb722b0a3205f0563293"
     }
   ]
 }
