@@ -9,7 +9,7 @@ TruthSpine keeps your project's Truth current, traceable, and available to every
 3. Open the AI chat, IDE, or agent workspace you normally use.
 4. Let TruthSpine guide the connection.
 
-Try TruthSpine free for 14 days. Read the current setup, security, and privacy information at https://truthspine.app/.
+Try TruthSpine free for 14 days. The trial starts on the first successful desktop app launch. A one-time purchase permanently unlocks TruthSpine V1 and all 1.x maintenance updates on one active computer; future major versions are separate purchases. Installing a connector or downloading an archive does not start the trial. Read the current setup, security, and privacy information at https://truthspine.app/.
 
 ## Workspace connectors
 
@@ -19,14 +19,14 @@ Try TruthSpine free for 14 days. Read the current setup, security, and privacy i
 
 ## SHA-256 checksums
 
-`056e68ca7a0c37635badabe09002527c6dd7159aa5a9b3d43c26f819a7a4bb3b  truthspine-0.1.0-windows-x64.zip`
+`9c8df377c8ea504e241e687800af0fe2f35106c5b43be97a6c1db4c4f8975617  truthspine-0.1.0-windows-x64.zip`
 
-`afd8fba5812def2e3b0051f4b7718bbb90befc4770b4cf3791918059e9ed9774  truthspine-0.1.0-macos-x64.tar.gz`
+`e0f2e10a2c264ea5b5aaacbd795fcdf99bc1c8346c63e4165aa6892cfff505c6  truthspine-0.1.0-macos-x64.tar.gz`
 
-`04f3a1be040e7851b8bb04f8797ca4a46e031ba0ab252902d1e0af2e2d26b2db  truthspine-0.1.0-macos-arm64.tar.gz`
+`ae0a8441fd81f6e137c3a0a85a46c3026470563ed046d475f5f600a0c975859b  truthspine-0.1.0-macos-arm64.tar.gz`
 
-`d22c82be8de7e3f8da3f3569953fdec2489576e3b51ef5790461951c6d5de3ff  truthspine-0.1.0-linux-x64.tar.gz`
+`4a6974bdf1af0d869e84263a3c584122d0c88f831b8d6914cb61358556c05734  truthspine-0.1.0-linux-x64.tar.gz`
 
-`a5ff4a4cc847ea70ad42e0cc9710fb773008f45d3c962302f47dc77226bb35b7  truthspine-vscode-0.1.1.vsix`
+`9032b44eab2e894fb362f0ee7b97e4b9aa25fe26f5a3b6fe150113049558b24f  timeprooflabs.truthspine-vscode-0.1.4.vsix`
 
-`a8672248fa8497d9ea476b73ad041e625026edf5bd68bb722b0a3205f0563293  truthspine-jetbrains-0.1.1.zip`
+`d974cb2b3ef6c8a76aa85f1a09c6001d087aa7f3fcf6d7edbd7e3d828e5ac92b  TruthSpine-0.1.2.zip`
