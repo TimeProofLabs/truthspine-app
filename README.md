@@ -18,7 +18,11 @@ Your agents get the current decisions, sources, history, and next project work w
 
 Try TruthSpine free for 14 days.
 
-1. [Download TruthSpine](https://truthspine.app/#download).
+On Windows, the trial starts on the first successful TruthSpine app launch and the V1 license is used on one active computer at a time. On Mac, the trial starts only after you choose it in the app and Apple completes the StoreKit transaction; Apple purchases restore on eligible Macs. A one-time purchase permanently unlocks TruthSpine V1 and all 1.x maintenance updates. Future major versions are separate purchases. Installing a connector does not start the trial.
+
+TruthSpine for Windows is available from Microsoft Store. The macOS edition is waiting for App Store review.
+
+1. [Get TruthSpine for Windows from Microsoft Store](https://apps.microsoft.com/detail/9pbn25k75vdj).
 2. Connect a local folder, repository, or supported source.
 3. Open the AI chat, IDE, or agent workspace you normally use.
 4. Let TruthSpine guide the connection.
@@ -36,4 +40,4 @@ TruthSpine supports VS Code, GitHub Copilot in VS Code, Claude Desktop, Claude C
 - [Security and privacy](https://truthspine.app/security.html)
 - Email: support@timeprooflabs.com
 
-This repository is the public product hub for downloads, release notes, support, and discussion. The TruthSpine desktop application is distributed under the license included with the app; this repository does not publish the private application source code.
+This repository is the public product hub for connectors, release notes, support, and discussion. The proprietary TruthSpine desktop application is distributed only through trusted app stores; this repository does not publish desktop packages or private application source code.
