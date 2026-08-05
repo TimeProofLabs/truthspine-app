@@ -1,8 +1,10 @@
 # TruthSpine
 
-TruthSpine keeps your project's Truth current, traceable, and available to every connected agent.
+## TruthSpine Knows Your Project Truth and Automatically Keeps Your Agents Current, Start to Finish.
 
-Your agents get the current decisions, sources, history, and next project work without making you repeat the project, docs, files, or rules. TruthSpine maintains project Truth automatically in the background.
+TruthSpine knows your project truth from the sources you connect, keeps it current as your project changes, and automatically gives your connected agents the project knowledge and next work they need.
+
+TruthSpine knows your project truth from the sources you connect. It keeps that truth current as your project changes and automatically gives every connected agent the decisions, sources, history, rules, and next work it needs from start to finish, working quietly in the background.
 
 [![See TruthSpine keep project Truth available to an agent](media/truthspine-demo.png)](https://truthspine.app/#demo)
 
