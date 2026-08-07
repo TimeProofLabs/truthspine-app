@@ -6,7 +6,7 @@ TruthSpine knows your project truth from the sources you connect, keeps it curre
 
 ## Start here
 
-1. Install the protected TruthSpine Windows app through [Microsoft Store](https://apps.microsoft.com/detail/9pbn25k75vdj). The macOS edition is waiting for App Store review.
+1. Install the protected TruthSpine app through [Microsoft Store](https://apps.microsoft.com/detail/9pbn25k75vdj) or the [Mac App Store](https://apps.apple.com/app/id6794478470).
 2. Open TruthSpine and connect a real project folder or repository.
 3. Open the AI chat, IDE, or agent workspace you normally use.
 4. Let TruthSpine guide the connection.
@@ -21,6 +21,6 @@ Try TruthSpine free for 14 days. On Windows, the trial starts on the first succe
 
 ## SHA-256 checksums
 
-`c2dc214299ba8b5548f9434193f7635a82d8b666dbe6d3602fab1afbe171d895  timeprooflabs.truthspine-vscode-0.1.6.vsix`
+`e8920633e00fbe800e2e375fbddf96f73554ed56a5b2d45ee758d3f130f70648  timeprooflabs.truthspine-vscode-0.1.7.vsix`
 
-`3f2facaf0a89fb04d3d8de64d19aaf19b4d92139d791bc1888e7e0a505c5a230  TruthSpine-0.1.2.zip`
+`ea37f0e2d47e6379c6ffae86aee32ae264fc690b7dab6e8c2e83cf2cfa97a88b  TruthSpine-0.1.3.zip`
