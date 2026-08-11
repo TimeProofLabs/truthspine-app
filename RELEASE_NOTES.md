@@ -21,6 +21,6 @@ Try TruthSpine free for 14 days. On Windows, the trial starts on the first succe
 
 ## SHA-256 checksums
 
-`e8920633e00fbe800e2e375fbddf96f73554ed56a5b2d45ee758d3f130f70648  timeprooflabs.truthspine-vscode-0.1.7.vsix`
+`f8062c7591c12bdf09a7cf815c8dd6199d788befa118287c1e766c2a43fae81b  timeprooflabs.truthspine-vscode-0.1.12.vsix`
 
-`ea37f0e2d47e6379c6ffae86aee32ae264fc690b7dab6e8c2e83cf2cfa97a88b  TruthSpine-0.1.3.zip`
+`1096b1d757dd147c8fa5064f804ddfa8da50942f9efe6d798b0b8309dfe22de3  TruthSpine-0.1.5.zip`
