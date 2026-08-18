@@ -20,7 +20,7 @@ TruthSpine knows your project truth from the sources you connect. It keeps that 
 
 Try TruthSpine free for 14 days.
 
-On Windows, the trial starts on the first successful TruthSpine app launch and the V1 license is used on one active computer at a time. On Mac, the trial starts only after you choose it in the app and Apple completes the StoreKit transaction; Apple purchases restore on eligible Macs. A one-time purchase permanently unlocks TruthSpine V1 and all 1.x maintenance updates. Future major versions are separate purchases. Installing a connector does not start the trial.
+On Windows, the trial starts only when you acquire the one-time free Microsoft Store trial add-on. On Mac, the trial starts only after you choose it in the app and Apple completes the StoreKit transaction. Reinstalling does not restart either trial. A one-time purchase through the applicable app store permanently unlocks TruthSpine V1 and all 1.x maintenance updates on eligible devices for that store account. Future major versions are separate purchases. Installing a free connector does not start the trial or unlock the paid app core.
 
 TruthSpine is available from Microsoft Store and the Mac App Store.
 
