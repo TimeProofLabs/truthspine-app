@@ -1,26 +1,30 @@
 # TruthSpine
 
-## TruthSpine Knows Your Project Truth and Automatically Keeps Your Agents Current, Start to Finish.
+## Stop re-explaining your project to every new AI chat.
 
-TruthSpine knows your project truth from the sources you connect, keeps it current as your project changes, and automatically gives your connected agents the project knowledge and next work they need.
+TruthSpine automatically gives each connected agent what it needs to continue: your latest project decisions, completed work, supporting evidence, and next steps.
 
-TruthSpine knows your project truth from the sources you connect. It keeps that truth current as your project changes and automatically gives every connected agent the decisions, sources, history, rules, and next work it needs from start to finish, working quietly in the background.
+Connect the projects and sources you choose. TruthSpine tracks what changed and automatically briefs every connected agent with your latest project decisions, completed work, supporting evidence, and next steps, so each new AI chat can continue without making you explain the project again.
 
-[![See TruthSpine keep project Truth available to an agent](media/truthspine-demo.png)](https://truthspine.app/#demo)
+[![See TruthSpine give an agent the latest project decisions and next work](media/truthspine-demo.png)](https://truthspine.app/#demo)
 
 ## Problems TruthSpine solves
 
-- **Agent work always needs context and project truth.** With TruthSpine, connected agents and chats receive current project knowledge automatically.
+- **Stop re-explaining your project to every new AI chat.** TruthSpine automatically gives each connected agent what it needs to continue: your latest project decisions, completed work, supporting evidence, and next steps.
 - **Teaching a new chat costs too many tokens.** TruthSpine gives the chat compact whole-project context when needed, reducing context-token use by more than 90% in every measured real-project test. In the largest measured real-project test, TruthSpine reduced 1,089,135 source tokens to 5,861 context tokens, a 99.46% reduction.
 - **My agents need constant directions manually from docs or prompts and they still get off track and work in circles.** Each connected chat is bound to its exact project and receives current decisions and next work.
-- **My agent confidently presents lies as Truth.** TruthSpine knows the real project truth from your verified sources and helps keep chats honest and on track.
+- **A confident AI answer can still be wrong.** TruthSpine keeps supporting evidence and unresolved uncertainty visible instead of silently treating every answer as a project fact.
 - **Important decisions disappear into old chats.** Decisions, changes, sources, and next work stay traceable through SHA-256 parent-child lineage, and TruthSpine locks them in without manually building docs.
 
 ## Start with your project
 
 Try TruthSpine free for 14 days.
 
-On Windows, the trial starts only when you acquire the one-time free Microsoft Store trial add-on. On Mac, the trial starts only after you choose it in the app and Apple completes the StoreKit transaction. Reinstalling does not restart either trial. A one-time purchase through the applicable app store permanently unlocks TruthSpine V1 and all 1.x maintenance updates on eligible devices for that store account. Future major versions are separate purchases. Installing a free connector does not start the trial or unlock the paid app core.
+On Windows, acquire the one-time free Microsoft Store trial add-on to start 14 days. A one-time USD 95 Microsoft Store purchase unlocks TruthSpine V1 and all 1.x updates on eligible devices for that Store account; reinstalling does not restart the trial.
+
+On Mac, the 14-day trial starts only after you choose it and Apple completes the StoreKit transaction. A one-time USD 95 non-consumable purchase unlocks TruthSpine V1 and all 1.x updates, and Restore Purchases restores access on eligible Macs.
+
+Future major versions are separate purchases. Installing a connector does not start a TruthSpine trial or create a separate connector license.
 
 TruthSpine is available from Microsoft Store and the Mac App Store.
 
