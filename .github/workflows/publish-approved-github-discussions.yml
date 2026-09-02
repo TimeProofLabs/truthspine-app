@@ -1,0 +1,88 @@
+name: Publish approved TruthSpine discussions
+
+on:
+  schedule:
+    - cron: "0 17 12 9 *"
+    - cron: "0 17 17 9 *"
+    - cron: "0 17 24 9 *"
+    - cron: "0 17 30 9 *"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  discussions: write
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Publish the discussion approved for today
+        uses: actions/github-script@v7
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const approved = {
+              "2026-09-12": {
+                categoryId: "DIC_kwDOTfrk0c4DBslN",
+                title: "What belongs in a verifiable agent-to-agent handoff?",
+                body: "When a project moves to another agent or a clean session, which fields are essential for correct continuation? Please share a redacted structure or example and explain how the receiving agent proves it used the handoff.\n\nDisclosure: this discussion is opened by the TruthSpine team; competing approaches and critical results are welcome."
+              },
+              "2026-09-17": {
+                categoryId: "DIC_kwDOTfrk0c4DBslN",
+                title: "What should multi-agent reviewers verify independently?",
+                body: "Shared context improves coordination but can also propagate one stale premise across every agent. Which facts should a reviewing agent receive, and which assumptions should it reconstruct or verify independently?\n\nDisclosure: this discussion is opened by the TruthSpine team; competing approaches and critical results are welcome."
+              },
+              "2026-09-24": {
+                categoryId: "DIC_kwDOTfrk0c4DBslP",
+                title: "Template exchange: ownership maps for parallel AI agents",
+                body: "When multiple agents work on one project, how do you assign tasks, file boundaries, decisions, required checks, and final integration? Share a redacted ownership structure and explain how it detects overlap before changes begin.\n\nDisclosure: this discussion is opened by the TruthSpine team; competing approaches and critical results are welcome."
+              },
+              "2026-09-30": {
+                categoryId: "DIC_kwDOTfrk0c4DBslO",
+                title: "How should an agent workflow invalidate stale next steps?",
+                body: "A previously correct next step can become wrong after another task changes the project. What event, authority, or evidence should invalidate it, and how should that change reach connected agents?\n\nDisclosure: this discussion is opened by the TruthSpine team; competing approaches and critical results are welcome."
+              }
+            };
+
+            const date = new Date().toISOString().slice(0, 10);
+            const post = approved[date];
+            if (!post) {
+              core.notice(`No approved discussion is scheduled for ${date}.`);
+              return;
+            }
+
+            const repositoryId = "R_kgDOTfrk0Q";
+            const existing = await github.graphql(`
+              query ExistingDiscussion($owner: String!, $name: String!) {
+                repository(owner: $owner, name: $name) {
+                  discussions(first: 50, orderBy: {field: CREATED_AT, direction: DESC}) {
+                    nodes { title url }
+                  }
+                }
+              }
+            `, { owner: context.repo.owner, name: context.repo.repo });
+
+            const duplicate = existing.repository.discussions.nodes.find(
+              discussion => discussion.title === post.title
+            );
+            if (duplicate) {
+              core.notice(`Discussion already exists: ${duplicate.url}`);
+              return;
+            }
+
+            const created = await github.graphql(`
+              mutation CreateDiscussion($input: CreateDiscussionInput!) {
+                createDiscussion(input: $input) {
+                  discussion { url title }
+                }
+              }
+            `, {
+              input: {
+                repositoryId,
+                categoryId: post.categoryId,
+                title: post.title,
+                body: post.body
+              }
+            });
+
+            core.notice(`Published: ${created.createDiscussion.discussion.url}`);
