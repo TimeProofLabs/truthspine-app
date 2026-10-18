@@ -3,7 +3,7 @@
 ![Version](https://img.shields.io/badge/version-v0.1.0-blue)
 ![Platform](https://img.shields.io/badge/platform-Windows%20%7C%20macOS-lightgrey)
 ![MCP](https://img.shields.io/badge/MCP-native-purple)
-![Price](https://img.shields.io/badge/price-%2495%20one--time-green)
+![Price](https://img.shields.io/badge/launch%20price-%2499.99%20once-green)
 
 ## Stop re-explaining your project to every new AI chat.
 
@@ -78,9 +78,9 @@ Done looks like this: the agent answers from your project truth — decisions, s
 
 Try TruthSpine free for 14 days.
 
-On Windows, acquire the one-time free Microsoft Store trial add-on to start 14 days. A one-time USD 95 Microsoft Store purchase unlocks TruthSpine V1 and all 1.x updates on eligible devices for that Store account; reinstalling does not restart the trial.
+On Windows, acquire the one-time free Microsoft Store trial add-on to start 14 days. A one-time Microsoft Store purchase, $99.99 at the launch price (regular price $249.99), unlocks TruthSpine V1 and all 1.x updates on eligible devices for that Store account; reinstalling does not restart the trial.
 
-On Mac, the 14-day trial starts only after you choose it and Apple completes the StoreKit transaction. A one-time USD 95 non-consumable purchase unlocks TruthSpine V1 and all 1.x updates, and Restore Purchases restores access on eligible Macs.
+On Mac, the 14-day trial starts only after you choose it and Apple completes the StoreKit transaction. A one-time purchase, $99.99 at the launch price (regular price $249.99), unlocks TruthSpine V1 and all 1.x updates, and Restore Purchases restores access on eligible Macs.
 
 Future major versions are separate purchases. Installing a connector does not start a TruthSpine trial or create a separate connector license.
 
