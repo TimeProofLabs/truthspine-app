@@ -1,0 +1,17 @@
+{
+  "mcpServers": {
+    "truthspine": {
+      "command": "node",
+      "args": [
+        "${CURSOR_PLUGIN_ROOT}/scripts/start-truthspine.mjs"
+      ],
+      "env": {
+        "NODE_OPTIONS": "",
+        "NODE_PATH": "",
+        "TRUTHSPINE_PROJECT_ROOT": "${workspaceFolder}",
+        "TRUTHSPINE_LOCK_PROJECT_ROOT": "1",
+        "TRUTHSPINE_HOST_ID": "cursor"
+      }
+    }
+  }
+}

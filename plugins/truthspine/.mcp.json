@@ -1,0 +1,17 @@
+{
+  "mcpServers": {
+    "truthspine": {
+      "command": "node",
+      "args": [
+        "${CLAUDE_PLUGIN_ROOT}/scripts/start-truthspine.mjs"
+      ],
+      "env": {
+        "NODE_OPTIONS": "",
+        "NODE_PATH": "",
+        "TRUTHSPINE_PROJECT_ROOT": "${CLAUDE_PROJECT_DIR}",
+        "TRUTHSPINE_LOCK_PROJECT_ROOT": "1",
+        "TRUTHSPINE_HOST_ID": "claude-code"
+      }
+    }
+  }
+}

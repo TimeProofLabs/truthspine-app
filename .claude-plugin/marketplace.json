@@ -1,0 +1,19 @@
+{
+  "name": "timeprooflabs",
+  "owner": {
+    "name": "TimeProofLabs",
+    "email": "support@truthspine.app"
+  },
+  "metadata": {
+    "description": "TimeProofLabs plugins: TruthSpine connects Claude to your project's decisions, completed work, evidence and next steps."
+  },
+  "plugins": [
+    {
+      "name": "truthspine",
+      "source": "./plugins/truthspine",
+      "description": "The keeper of your project. One checked record of what was decided, what was done, what failed and what comes next. Every connected chat starts already knowing your project. Your project stays on your computer. You lead the work. TruthSpine keeps the truth.",
+      "version": "0.2.0",
+      "category": "productivity"
+    }
+  ]
+}

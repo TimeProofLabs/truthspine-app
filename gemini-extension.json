@@ -1,0 +1,21 @@
+{
+  "name": "truthspine",
+  "version": "0.2.0",
+  "description": "The keeper of your project. One checked record of what was decided, what was done, what failed and what comes next. Every connected chat starts already knowing your project. Your project stays on your computer. You lead the work. TruthSpine keeps the truth.",
+  "contextFileName": "GEMINI.md",
+  "mcpServers": {
+    "truthspine": {
+      "command": "node",
+      "args": [
+        "${extensionPath}${/}gemini${/}scripts${/}start-truthspine.mjs"
+      ],
+      "env": {
+        "NODE_OPTIONS": "",
+        "NODE_PATH": "",
+        "TRUTHSPINE_PROJECT_ROOT": "${workspacePath}",
+        "TRUTHSPINE_LOCK_PROJECT_ROOT": "1",
+        "TRUTHSPINE_HOST_ID": "gemini-cli"
+      }
+    }
+  }
+}

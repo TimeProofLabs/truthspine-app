@@ -1,0 +1,40 @@
+{
+  "name": "@timeprooflabs/truthspine-mcp",
+  "version": "0.2.0",
+  "description": "One checked record of what was decided, what was done and what comes next. Every connected chat starts already knowing your project. Your project stays on your computer. Connector for the TruthSpine desktop app.",
+  "license": "Apache-2.0",
+  "author": {
+    "name": "TimeProofLabs",
+    "email": "support@truthspine.app",
+    "url": "https://truthspine.app/"
+  },
+  "homepage": "https://truthspine.app/",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/TimeProofLabs/truthspine-app.git"
+  },
+  "bugs": {
+    "url": "https://truthspine.app/support"
+  },
+  "keywords": [
+    "truthspine",
+    "mcp",
+    "model-context-protocol",
+    "project memory",
+    "decisions"
+  ],
+  "mcpName": "app.truthspine/truthspine",
+  "type": "module",
+  "bin": {
+    "truthspine-mcp": "bin/truthspine-mcp.mjs"
+  },
+  "files": [
+    "bin/",
+    "lib/",
+    "README.md",
+    "LICENSE"
+  ],
+  "engines": {
+    "node": ">=18"
+  }
+}

@@ -1,0 +1,21 @@
+{
+  "name": "truthspine",
+  "version": "0.2.0",
+  "description": "The keeper of your project. One checked record of what was decided, what was done, what failed and what comes next. Every connected chat starts already knowing your project. Your project stays on your computer. You lead the work. TruthSpine keeps the truth.",
+  "author": {
+    "name": "TimeProofLabs",
+    "email": "support@truthspine.app",
+    "url": "https://truthspine.app/"
+  },
+  "homepage": "https://truthspine.app/",
+  "repository": "https://github.com/TimeProofLabs/truthspine-app",
+  "license": "Apache-2.0",
+  "keywords": [
+    "truthspine",
+    "project memory",
+    "decisions",
+    "handoff",
+    "mcp"
+  ],
+  "logo": "assets/logo.svg"
+}
