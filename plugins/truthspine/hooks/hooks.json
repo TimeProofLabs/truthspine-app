@@ -6,10 +6,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "node",
-            "args": [
-              "${CLAUDE_PLUGIN_ROOT}/scripts/claude-lifecycle-runner.mjs"
-            ],
+            "command": "node \"${CLAUDE_PLUGIN_ROOT}/scripts/claude-lifecycle-runner.mjs\"",
             "timeout": 45
           }
         ]
