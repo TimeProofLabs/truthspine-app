@@ -1,7 +1,6 @@
 # TruthSpine
 
-![Version](https://img.shields.io/badge/version-v0.1.0-blue)
-![Platform](https://img.shields.io/badge/platform-Windows%20%7C%20macOS-lightgrey)
+![Platform](https://img.shields.io/badge/platform-Windows%20%7C%20macOS%20%7C%20Linux-lightgrey)
 ![MCP](https://img.shields.io/badge/MCP-native-purple)
 ![Price](https://img.shields.io/badge/launch%20price-%2499.99%20once-green)
 
@@ -19,30 +18,17 @@
 
 ## How it connects
 
-TruthSpine is a local app with an MCP server built in — MCP is the primary way agents connect to it. You add TruthSpine the same way you'd add any MCP server: paste its config into your agent's MCP settings. The app generates the exact snippet for your machine (the JetBrains plugin has a one-click **Copy MCP Configuration** action); the macOS shape looks like this:
+TruthSpine is a local app with an MCP server built in. You don't edit any settings by hand: in the app, open **Connections** and choose your AI app, and TruthSpine sets it up for your project. Or install the TruthSpine plugin or extension for your tool:
 
-```json
-{
-  "mcpServers": {
-    "truthspine": {
-      "type": "stdio",
-      "command": "/Applications/TruthSpine.app/Contents/MacOS/TruthSpine",
-      "args": [
-        "/Applications/TruthSpine.app/Contents/Resources/app.asar/src/local-app-mcp-proxy.js",
-        "--host-id", "jetbrains",
-        "--project-root", "/path/to/your/project"
-      ],
-      "env": { "ELECTRON_RUN_AS_NODE": "1", "TRUTHSPINE_PACKAGED_RUNTIME": "1" }
-    }
-  }
-}
-```
+- **Claude Code:** `/plugin marketplace add TimeProofLabs/truthspine-app`, then `/plugin install truthspine@timeprooflabs`
+- **Gemini CLI:** `gemini extensions install https://github.com/TimeProofLabs/truthspine-app`
+- **VS Code and Open VSX editors:** "TruthSpine Connector" from the Visual Studio Marketplace or Open VSX
+- **JetBrains IDEs:** "TruthSpine Connector" from JetBrains Marketplace
+- **Apps that install MCP bundles:** `truthspine-0.2.0.mcpb` from this repository's [releases](https://github.com/TimeProofLabs/truthspine-app/releases)
+
+Every tool and how to connect it: [CONNECT.md](CONNECT.md).
 
 Then open a fresh chat and say **"Attach TruthSpine."** The agent pulls your current project truth — decisions, evidence, next work — and continues from there. No re-explaining.
-
-MCP isn't the only connection method: connectors like the [TruthSpine JetBrains plugin](https://github.com/TimeProofLabs/truthspine-jetbrains) can also wire the connection for you (connect the open project, copy the MCP config, or copy the "Attach TruthSpine" phrase for chats that need a manual attach). But MCP is the main integration design — if your agent speaks MCP, this is the path.
-
-**Where to paste it:** Claude Desktop → `claude_desktop_config.json` · Claude Code → `claude mcp add` or `.mcp.json` · Cursor → Settings → MCP · JetBrains IDEs → Settings → Tools → AI Assistant → Model Context Protocol · plus VS Code, Codex, Windsurf, Zed, and more (full list below).
 
 ## The 60-second version
 
@@ -63,9 +49,9 @@ That's the demo at the top of this page, unedited.
 
 ## 5-minute quickstart
 
-1. **Install** TruthSpine from the [Microsoft Store](https://apps.microsoft.com/detail/9pbn25k75vdj) (Windows) or the [Mac App Store](https://apps.apple.com/app/id6794478470) (Mac).
+1. **Install** TruthSpine from the [Microsoft Store](https://apps.microsoft.com/detail/9pbn25k75vdj) (Windows), the [Mac App Store](https://apps.apple.com/app/id6794478470) (Mac), or as an [AppImage](https://truthspine.app/download/linux) (Linux).
 2. **Connect** a local folder, repository, or supported source in the app.
-3. **Paste** TruthSpine's MCP config into your agent (see *How it connects* above).
+3. **Connect your AI app** in the app's Connections, or with its plugin (see *How it connects* above).
 4. **Open** a brand-new chat and say **"Attach TruthSpine."**
 5. **Ask** "what is this project and where are we at with it?"
 
@@ -82,20 +68,22 @@ On Windows, acquire the one-time free Microsoft Store trial add-on to start 14 d
 
 On Mac, the 14-day trial starts only after you choose it and Apple completes the StoreKit transaction. A one-time purchase, $99.99 at the launch price (regular price $249.99), unlocks TruthSpine V1 and all 1.x updates, and Restore Purchases restores access on eligible Macs.
 
+On Linux, the AppImage starts with a free 14-day trial. Then buy once from us: $99.99 at the launch price (regular price $249.99), for V1 and every 1.x update, on up to three of your own Linux computers. You can move it between them in the app.
+
 Future major versions are separate purchases. Installing a connector does not start a TruthSpine trial or create a separate connector license.
 
 </details>
 
 ## Works where you work
 
-Deep support: **Claude Code · Cursor · Claude Desktop** — paste the MCP config, say "attach truthspine."
+Deep support: **Claude Code · Cursor · Claude Desktop** — connect in the app or with the plugin, then say "attach truthspine."
 
 <details>
-<summary>All supported platforms (23)</summary>
+<summary>All supported platforms (22)</summary>
 
 <br>
 
-VS Code, GitHub Copilot in VS Code, Claude Desktop, Claude Code, Cursor, Codex, Google Antigravity, Windsurf / Devin, Open WebUI, LM Studio, Continue, Cline, Roo Code, Kiro, JetBrains IDEs, Zed, Hermes Agent, OpenClaw, OpenCode, GitHub Copilot CLI, Droid, Pi, OpenClaw Desktop.
+VS Code, GitHub Copilot in VS Code, Claude Desktop, Claude Code, Cursor, Codex, Google Antigravity, Windsurf / Devin, Open WebUI, LM Studio, Continue, Cline, Kiro, JetBrains IDEs, Zed, Hermes Agent, OpenClaw, OpenCode, GitHub Copilot CLI, Droid, Pi, OpenClaw Desktop.
 
 </details>
 
@@ -103,15 +91,15 @@ TruthSpine runs locally on your computer and keeps project content local by defa
 
 ## About this repository
 
-This repository is the public product hub for connectors, release notes, support, and discussion. The proprietary TruthSpine desktop application is distributed only through trusted app stores; this repository does not publish desktop packages or private application source code.
+This repository is the public product hub for connectors, release notes, support, and discussion. It also carries the Linux AppImage on its [releases](https://github.com/TimeProofLabs/truthspine-app/releases). Windows and Mac get TruthSpine from the Microsoft Store and the Mac App Store. The app's own source code is not published.
 
-**License:** Apache-2.0 for this repository's contents (connectors, docs, and hub materials) — see [LICENSE](LICENSE). The proprietary TruthSpine desktop application itself remains closed-source and is distributed only through trusted app stores.
+**License:** Apache-2.0 for this repository's contents (connectors, docs, and hub materials) — see [LICENSE](LICENSE). The TruthSpine desktop application itself remains closed-source.
 
 ## Support and feedback
 
 - [Report a problem](https://github.com/TimeProofLabs/truthspine-app/issues/new/choose)
 - [Ask a question or share an idea](https://github.com/TimeProofLabs/truthspine-app/discussions)
-- [Security and privacy](https://truthspine.app/security.html)
-- Email: support@timeprooflabs.com
+- [Privacy](https://truthspine.app/privacy) · [Security](https://truthspine.app/security)
+- Email: support@truthspine.app
 
 ⭐ If TruthSpine saves you a re-explanation, star the repo — it helps other devs find it.
