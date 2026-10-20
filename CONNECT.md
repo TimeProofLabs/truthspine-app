@@ -1,6 +1,6 @@
 # Connect TruthSpine to your AI tools
 
-TruthSpine is a desktop app that keeps your project's decisions, finished work, evidence and next steps, and gives them to the AI tools you connect. Each tool below needs the app installed and your project folder connected in it: Microsoft Store on Windows, Mac App Store on macOS, or the AppImage from truthspine.app on Linux. Then say "Attach TruthSpine" in a chat.
+TruthSpine is a desktop app that keeps your project's decisions, finished work, evidence and next steps, and gives them to the AI tools you connect. Each tool below needs the app installed and your project folder connected in it: Microsoft Store on Windows, Mac App Store on macOS, or the AppImage from truthspine.app on Linux. Then say "Connect TruthSpine" in a chat.
 
 | Tool | How to connect |
 | --- | --- |

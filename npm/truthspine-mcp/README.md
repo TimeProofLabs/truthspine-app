@@ -1,6 +1,8 @@
 # TruthSpine MCP connector (npm)
 
-The keeper of your project. One checked record of what was decided, what was done, what failed and what comes next. Every connected chat starts already knowing your project. Your project stays on your computer. You lead the work. TruthSpine keeps the truth.
+The keeper of your projects. You lead the work. TruthSpine keeps the truth automatically.
+
+One checked record of what was decided, what was done, what failed and what comes next. Every connected chat starts already knowing your project. Your project stays on your computer.
 
 This is the free connector. It needs the TruthSpine desktop app installed on the same computer: Microsoft Store on Windows, Mac App Store on macOS, or the AppImage from truthspine.app on Linux.
 
@@ -8,7 +10,7 @@ This is the free connector. It needs the TruthSpine desktop app installed on the
 
 1. Install and open the TruthSpine app, and connect your project folder in it.
 2. Add an MCP server to your tool that runs `npx -y @timeprooflabs/truthspine-mcp --host <tool>`, started in your project folder (or add `--project <folder>`). Use your tool's name for `<tool>`: for example `cline`, `zed`, `windsurf-devin`, `cursor`, `claude-desktop`. Without `--host` the connection is labelled as an agent on this computer.
-3. In a chat, say "Attach TruthSpine".
+3. In a chat, say "Connect TruthSpine".
 
 The TruthSpine app can also write these settings for you: open Connections and choose your tool.
 

@@ -1,6 +1,8 @@
 # TruthSpine for Cursor
 
-The keeper of your project. One checked record of what was decided, what was done, what failed and what comes next. Every connected chat starts already knowing your project. Your project stays on your computer. You lead the work. TruthSpine keeps the truth.
+The keeper of your projects. You lead the work. TruthSpine keeps the truth automatically.
+
+One checked record of what was decided, what was done, what failed and what comes next. Every connected chat starts already knowing your project. Your project stays on your computer.
 
 This is the free connector. It needs the TruthSpine desktop app installed on the same computer: Microsoft Store on Windows, Mac App Store on macOS, or the AppImage from truthspine.app on Linux.
 
@@ -8,7 +10,7 @@ This is the free connector. It needs the TruthSpine desktop app installed on the
 
 1. Install and open the TruthSpine app, and connect your project folder in it.
 2. Add TruthSpine from the Cursor Marketplace (or let the TruthSpine app connect Cursor for you: Connections, then Cursor).
-3. Open your project in Cursor and say "Attach TruthSpine" in a chat.
+3. Open your project in Cursor and say "Connect TruthSpine" in a chat.
 
 ## Tools
 

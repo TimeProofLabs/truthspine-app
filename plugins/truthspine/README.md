@@ -1,6 +1,8 @@
 # TruthSpine for Claude
 
-The keeper of your project. One checked record of what was decided, what was done, what failed and what comes next. Every connected chat starts already knowing your project. Your project stays on your computer. You lead the work. TruthSpine keeps the truth.
+The keeper of your projects. You lead the work. TruthSpine keeps the truth automatically.
+
+One checked record of what was decided, what was done, what failed and what comes next. Every connected chat starts already knowing your project. Your project stays on your computer.
 
 This is the free connector. It needs the TruthSpine desktop app installed on the same computer: Microsoft Store on Windows, Mac App Store on macOS, or the AppImage from truthspine.app on Linux.
 
@@ -8,7 +10,7 @@ This is the free connector. It needs the TruthSpine desktop app installed on the
 
 1. Install and open the TruthSpine app, and connect your project folder in it.
 2. Add this plugin: in Claude Code run `/plugin marketplace add TimeProofLabs/truthspine-app`, then `/plugin install truthspine@timeprooflabs`; or add it from the Claude directory.
-3. Open your project and say "Attach TruthSpine".
+3. Open your project and say "Connect TruthSpine".
 
 ## Tools
 

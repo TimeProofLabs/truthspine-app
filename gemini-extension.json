@@ -1,7 +1,7 @@
 {
   "name": "truthspine",
   "version": "0.2.0",
-  "description": "The keeper of your project. One checked record of what was decided, what was done, what failed and what comes next. Every connected chat starts already knowing your project. Your project stays on your computer. You lead the work. TruthSpine keeps the truth.",
+  "description": "The keeper of your projects. You lead the work. TruthSpine keeps the truth automatically. Every connected chat starts already knowing your project. Your project stays on your computer.",
   "contextFileName": "GEMINI.md",
   "mcpServers": {
     "truthspine": {
