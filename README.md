@@ -26,7 +26,6 @@ You can also add TruthSpine from your tool:
 
 - **Claude Code:** `/plugin marketplace add TimeProofLabs/truthspine-app`, then `/plugin install truthspine@timeprooflabs`
 - **Cursor:** add TruthSpine from the Cursor Marketplace
-- **Gemini CLI:** `gemini extensions install https://github.com/TimeProofLabs/truthspine-app`
 - **VS Code and Open VSX editors:** "TruthSpine Connector" from the Visual Studio Marketplace or Open VSX
 - **JetBrains IDEs:** "TruthSpine Connector" from JetBrains Marketplace
 - **Any other MCP tool:** a server named `truthspine` that runs `npx -y @timeprooflabs/truthspine-mcp --host <tool> --project <folder>`
