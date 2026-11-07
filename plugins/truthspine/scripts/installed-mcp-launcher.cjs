@@ -4,6 +4,7 @@
 // Thin connector transport, compatible with the MCPB's Node >=16 runtime.
 // No TruthSpine engine import. Registration selects a launch destination; it
 // never supplies Store ownership. The installed core verifies native access.
+// (The one exception runs the installed package's own server in this process: inPlaceHandover below.)
 const fs = require("node:fs");
 const path = require("node:path");
 const crypto = require("node:crypto");
@@ -22,6 +23,8 @@ const fail = () => { throw new Error(ERROR); };
 const LAUNCHER_RESULTS = Object.freeze({
   app_not_installed: "TruthSpine isn't installed on this computer.",
   app_not_running: "TruthSpine is installed but not running. Open it and try again.",
+  app_not_answering: "TruthSpine is installed but did not answer. Open the TruthSpine app and try again.",
+  app_not_opened: "TruthSpine is installed but has not been opened yet. Open TruthSpine once, then try again.",
   unavailable: ERROR
 });
 const LAUNCHER_STORE_LINKS = Object.freeze({ win32: "https://apps.microsoft.com/detail/9pbn25k75vdj", darwin: "https://apps.apple.com/us/app/truthspine/id6794478470?mt=12" });
@@ -35,13 +38,27 @@ const typedCode = error => {
 // The one line a person should read when the launcher cannot connect.
 function describeLauncherFailure(error, platform) {
   const code = typedCode(error) || "unavailable";
-  const link = code === "app_not_installed" ? LAUNCHER_STORE_LINKS[platform || process.platform] : undefined;
-  return { code, message: LAUNCHER_RESULTS[code] + (link ? " Install it from " + link : ""), storeLink: link };
+  const where = platform || process.platform;
+  const link = code === "app_not_installed" ? LAUNCHER_STORE_LINKS[where] : undefined;
+  // (truthspine.app on every platform, and Linux its own page: B8)
+  const get = code === "app_not_installed" ? " Get it here: " + (link ? link + " or " + DOWNLOAD_PAGE : LAUNCHER_GET_LINKS[where] || DOWNLOAD_PAGE) : "";
+  return { code, message: LAUNCHER_RESULTS[code] + get, storeLink: link };
 }
 const object = value => value !== null && typeof value === "object" && !Array.isArray(value);
 // "continue" stays accepted so an entry an earlier version wrote keeps starting; TruthSpine no longer offers or writes it
 // (Continue retired by the owner, 2026-10-09).
 const HOST_IDS = new Set(["claude-desktop", "claude-code", "codex-cli", "cursor", "vscode", "github-copilot-vscode", "continue", "cline", "cline-cli", "windsurf-devin", "opencode", "opencode-ide", "lm-studio", "kiro", "antigravity", "jetbrains", "zed", "hermes-agent", "openclaw", "copilot-cli", "droid", "pi", "computer-agent", "gemini-cli"]);
+// The smaller tool set each app gets; every app not named here gets the full catalog. Nothing falls into a smaller set by
+// default: Claude Code did, from the copilot fallback (2026-09-08) and its joining the host list (2026-09-24), and a
+// shipped package refused its session_update (Brain 2026-10-29).
+const HOST_TOOL_PROFILES = Object.freeze({
+  "claude-desktop": "claude-desktop",
+  "lm-studio": "lm-studio",
+  opencode: "local-agent", "hermes-agent": "local-agent", openclaw: "local-agent", droid: "local-agent", pi: "local-agent",
+  vscode: "copilot", // VS Code's own sync command carries its session updates, not this connection
+  "github-copilot-vscode": "copilot", // the same VS Code extension and sync command
+  "copilot-cli": "copilot" // named so since July (surface-connector-runtime.js)
+});
 function absolute(value, paths) {
   if (typeof value !== "string" || !value.trim() || value !== value.trim()
     || /[\u0000-\u001f\u007f]/.test(value) || !paths.isAbsolute(value)) fail();
@@ -114,8 +131,28 @@ function appOwnFolder(root, homeDir, platform) {
   const bases = APP_HOME_FOLDERS.map(name => paths.join(home, name));
   if (platform === "win32") bases.push(paths.join(home, "AppData", "Roaming"));
   if (platform === "darwin") bases.push(paths.join(home, "Library"));
+  // The person's own program folder, where AppImages and unpacked apps live (Main Build, Linux 0.1.8: a chat started in
+  // ~/Applications/VSCode-linux-x64 became a project and was learned at a third of a core), by its own path and by the
+  // folder it links to (LinuxImac's ~/Applications points at /data/moved-from-home/Applications).
+  if (platform !== "win32") {
+    const programs = paths.join(home, "Applications");
+    bases.push(programs);
+    if (platform === process.platform) { try { bases.push(fs.realpathSync(programs)); } catch { /* none */ } }
+  }
   bases.push(openClawWorkspace(home, platform));
   return bases.some(base => insideFolder(root, base, platform));
+}
+// Codex's dated scratch folders, one per day: Documents\Codex\<yyyy-mm-dd>\<name> (also under a OneDrive Documents).
+// Not a new project: a chat working there never registers it (Brainstorming, 2026-10-21: the owner's
+// Documents\Codex\2026-10-16\lo, copies of two public repositories a chat looked at, became "AI Dungeon Master"). Unlike
+// the folders above, one registered earlier stays listed with its records, and asks for its real folder.
+const CODEX_DAY_FOLDER = /^(?:onedrive[^\\/]*[\\/])?documents[\\/]codex(?:[\\/]\d{4}-\d{2}-\d{2}(?:[\\/].*)?)?$/i;
+function scratchFolder(folder, { homeDir, platform = process.platform } = {}) {
+  const paths = platform === "win32" ? path.win32 : path.posix;
+  if (typeof folder !== "string" || !paths.isAbsolute(folder) || typeof homeDir !== "string" || !paths.isAbsolute(homeDir)) return false;
+  const root = longWindowsName(paths.resolve(folder), platform), home = paths.resolve(homeDir);
+  if (!insideFolder(root, home, platform) || equal(root, home, platform)) return false;
+  return CODEX_DAY_FOLDER.test(paths.relative(home, root));
 }
 // The account's own home folder, from the user database. In the Mac App Store sandbox HOME and os.homedir() are the
 // app's container (~/Library/Containers/<app>/Data), so the person's real home and its Library would otherwise pass
@@ -133,23 +170,57 @@ function systemTempFolder(root, platform, env) {
   if (platform === process.platform) { try { named.push(require("node:os").tmpdir()); } catch { /* no temporary folder known */ } }
   return named.some(base => typeof base === "string" && paths.isAbsolute(base) && equal(root, paths.resolve(base), platform));
 }
+// TruthSpine's own throwaway folders (Brain 2026-10-28): a folder named truthspine-* in a temporary folder, and every
+// folder inside one, is made by TruthSpine's tests and checks, never by the person; one test run on the owner PC
+// (2026-09-27) left twenty such projects' data in the person's own TruthSpine home. A TruthSpine home that itself lives
+// in a temporary folder (a test's or a check's own) keeps them as projects.
+function temporaryFolders(platform, env) {
+  const paths = platform === "win32" ? path.win32 : path.posix;
+  const folders = platform === "win32" ? [env.TEMP, env.TMP, env.LOCALAPPDATA && paths.join(env.LOCALAPPDATA, "Temp")]
+    : [env.TMPDIR, "/tmp", "/var/tmp", "/private/tmp", "/private/var/tmp", ...(platform === "darwin" ? ["/var/folders", "/private/var/folders"] : [])];
+  if (platform === process.platform) {
+    try { folders.push(require("node:os").tmpdir()); } catch { /* no temporary folder known */ }
+    const account = platform === "win32" ? accountHomeFolder() : null;
+    if (account) folders.push(paths.join(account, "AppData", "Local", "Temp"));
+  }
+  return folders.filter(folder => typeof folder === "string" && paths.isAbsolute(folder)).map(folder => paths.resolve(folder));
+}
+function throwawayFolder(root, homeDir, platform, env) {
+  const paths = platform === "win32" ? path.win32 : path.posix;
+  const temps = temporaryFolders(platform, env);
+  let made = false;
+  for (let folder = root; !made && paths.dirname(folder) !== folder; folder = paths.dirname(folder)) {
+    made = /^truthspine-/i.test(paths.basename(folder)) && temps.some(temp => equal(paths.dirname(folder), temp, platform));
+  }
+  const truthHome = env.TRUTHSPINE_HOME || (typeof homeDir === "string" && paths.isAbsolute(homeDir) ? paths.join(homeDir, ".truthspine") : null);
+  if (!made || typeof truthHome !== "string" || !paths.isAbsolute(truthHome)) return false;
+  return !temps.some(temp => insideFolder(paths.resolve(truthHome), temp, platform));
+}
 // Judged by the path alone (a sandboxed relay may not look inside the folder): the disk root, a home folder (the one
-// given and the account's own), a system or program folder, the temporary folder itself, or an AI app's own folder is
-// never a project.
+// given and the account's own), a system or program folder, the temporary folder itself, TruthSpine's own throwaway
+// folders, or an AI app's own folder is never a project.
 function neverAProjectFolder(folder, { homeDir, platform = process.platform, env = process.env } = {}) {
   const paths = platform === "win32" ? path.win32 : path.posix;
   if (typeof folder !== "string" || !paths.isAbsolute(folder)) return true;
-  const root = paths.resolve(folder);
+  // (also for a saved project: the start-of-app tidy then removes a "MICROS~1" project an earlier version made)
+  const root = longWindowsName(paths.resolve(folder), platform);
   if (equal(root, paths.parse(root).root, platform) || systemOrProgramFolder(root, platform, env || {})
-    || systemTempFolder(root, platform, env || {})) return true;
+    || systemTempFolder(root, platform, env || {}) || throwawayFolder(root, homeDir, platform, env || {})) return true;
   const homes = [homeDir, platform === process.platform ? accountHomeFolder() : null].filter(home => typeof home === "string" && paths.isAbsolute(home));
   return homes.some(home => equal(root, paths.resolve(home), platform) || appOwnFolder(root, home, platform));
+}
+// A Windows short name ("C:\PROGRA~1\MICROS~1") is the same folder as its long one ("C:\Program Files\Microsoft VS
+// Code"), but it matches none of the folders above by name. Cline starts its servers in VS Code's install folder under
+// its short name (Windows VM, 2026-10-20): it became a project named "MICROS~1". The name is read in full first.
+function longWindowsName(root, platform) {
+  if (platform !== "win32" || platform !== process.platform || !/~/.test(root)) return root;
+  try { return fs.realpathSync.native(root); } catch { return root; }
 }
 function resolveBoundedHostWorkspace({ cwd, homeDir, platform = process.platform, env = process.env } = {}) {
   const paths = platform === "win32" ? path.win32 : path.posix;
   if (typeof cwd !== "string" || !paths.isAbsolute(cwd)
     || typeof homeDir !== "string" || !paths.isAbsolute(homeDir)) throw new Error("TruthSpine needs an absolute host workspace directory.");
-  const root = paths.resolve(cwd);
+  const root = longWindowsName(paths.resolve(cwd), platform);
   if (neverAProjectFolder(root, { homeDir, platform, env })) {
     throw new Error("TruthSpine could not identify a bounded host workspace. Open the intended project or folder; the last app-selected project will not be used for this task.");
   }
@@ -174,10 +245,30 @@ function restrictiveTelemetryEnv(...sources) {
   }) ? { TRUTHSPINE_TELEMETRY_MODE: "disabled" } : {};
 }
 
+// Whether TruthSpine's own files are where its installer puts them (Brain 2026-11-01, B8): a copy installed but never opened
+// has written no install record yet, and is told to open TruthSpine once rather than to get it. Names only, nothing run:
+// the Store's command in WindowsApps, the app in Applications, the snap's or the system package's command.
+function installedAppPresent({ platform = process.platform, env = process.env, homeDir = env.HOME || env.USERPROFILE || "",
+  exists = file => fs.existsSync(file), names = folder => fs.readdirSync(folder) } = {}) {
+  try {
+    if (platform === "win32") {
+      // (the execution alias is listed, never read: reading it may fail while starting it works)
+      const folder = typeof env.LOCALAPPDATA === "string" && path.win32.isAbsolute(env.LOCALAPPDATA) ? path.win32.join(env.LOCALAPPDATA, "Microsoft", "WindowsApps") : null;
+      return Boolean(folder) && names(folder).some(name => name.toLowerCase() === "truthspine-runtime.exe");
+    }
+    if (platform === "darwin") return ["/Applications/TruthSpine.app", homeDir ? path.posix.join(homeDir, "Applications", "TruthSpine.app") : null].some(file => file && exists(file));
+    if (platform === "linux") return Object.values(LINUX_PACKAGE_COMMANDS).some(file => exists(file));
+  } catch { /* not found */ }
+  return false;
+}
+
 function readRegistration(filename) {
   let fd;
   try {
-    const before = fs.lstatSync(filename);
+    // (no record at all: TruthSpine has never been installed and opened on this computer, B8; or installed, never opened)
+    let before;
+    try { before = fs.lstatSync(filename); }
+    catch (error) { if (error && error.code === "ENOENT") typedFail(installedAppPresent() ? "app_not_opened" : "app_not_installed"); fail(); }
     if (!before.isFile() || before.isSymbolicLink() || before.size > 65536) fail();
     fd = fs.openSync(filename, "r");
     const opened = fs.fstatSync(fd);
@@ -189,17 +280,23 @@ function readRegistration(filename) {
     const parsed = JSON.parse(buffer.subarray(0, used).toString("utf8"));
     if (!object(parsed) || parsed.schema !== "truthspine.installed-runtime.v1") fail();
     return parsed;
-  } catch { fail(); }
+  } catch (error) { if (["app_not_installed", "app_not_opened"].includes(typedCode(error))) throw error; fail(); }
   finally { if (fd !== undefined) fs.closeSync(fd); }
 }
 
 const WINDOWS_OS_NAMES = new Set(["systemroot", "windir", "comspec", "temp", "tmp", "userprofile", "localappdata", "appdata",
   "programfiles", "programfiles(x86)", "programdata", "allusersprofile", "public", "processor_architecture",
-  "number_of_processors", "computername", "os", "pathext", "path"]);
+  "number_of_processors", "computername", "os", "pathext", "path", "tz"]);
 // Linux: what the AppImage runtime and the server need to find the user's folders, and nothing else.
+// (TZ on both: a chat server reads the day in the zone the app reads it in, Brain 2026-10-30)
 const LINUX_OS_NAMES = new Set(["home", "path", "user", "logname", "lang", "lc_all", "lc_ctype", "lc_messages", "tmpdir",
-  "xdg_data_home", "xdg_config_home", "xdg_cache_home", "xdg_runtime_dir", "appimage_extract_and_run"]);
+  "xdg_data_home", "xdg_config_home", "xdg_cache_home", "xdg_runtime_dir", "appimage_extract_and_run", "tz"]);
 const LINUX_APP_ROOT = "@app";
+// The fixed launchers of the Linux packages that have one (src/packaged-platform.cjs keeps the same table; this file ships
+// alone in the VS Code extension, so it keeps its own copy, and a test keeps the two the same). The snap's follows store
+// updates; a versioned /snap/truthspine/<revision>/ path is never accepted.
+const LINUX_PACKAGE_COMMANDS = Object.freeze({ "linux-snap": "/snap/bin/truthspine", "linux-system": "/usr/bin/truthspine" });
+const linuxPackageCommand = name => (typeof name === "string" && Object.prototype.hasOwnProperty.call(LINUX_PACKAGE_COMMANDS, name) ? LINUX_PACKAGE_COMMANDS[name] : null);
 function installedChildEnv({ env, platform, profile, root, hostId, developmentBuild = false }) {
   const childEnv = {};
   const osNames = platform === "linux" ? LINUX_OS_NAMES : WINDOWS_OS_NAMES;
@@ -216,12 +313,9 @@ function installedChildEnv({ env, platform, profile, root, hostId, developmentBu
     ...(root && env.TRUTHSPINE_PROJECT_FROM_CWD === "1" ? { TRUTHSPINE_FOLLOWED_FOLDER: "1" } : {}),
     TRUTHSPINE_HOST_ID: hostId,
     TRUTHSPINE_MCP_OUTPUT_FRAMING: "jsonl" });
-  // Codex retains its existing full catalog, including session_update. Host
-  // identity is a policy selector, not authentication or permission to broaden
-  // another host's advertised tool profile.
-  if (!["codex-cli", "cursor", "kiro", "antigravity", "jetbrains", "zed"].includes(hostId)) childEnv.TRUTHSPINE_MCP_TOOL_PROFILE = hostId === "claude-desktop"
-    ? "claude-desktop"
-    : hostId === "lm-studio" ? "lm-studio" : ["opencode", "hermes-agent", "openclaw", "droid", "pi"].includes(hostId) ? "local-agent" : "copilot";
+  // Host identity is a policy selector, not authentication or permission to broaden another host's advertised tool
+  // profile. An app HOST_TOOL_PROFILES does not name keeps the full catalog, including session_update.
+  if (Object.hasOwn(HOST_TOOL_PROFILES, hostId)) childEnv.TRUTHSPINE_MCP_TOOL_PROFILE = HOST_TOOL_PROFILES[hostId];
   // Preserve an existing restrictive opt-out, never an ambient opt-in or
   // telemetry identity. Dropping an opt-out could enable collection when the
   // registered profile has consent. This grants no product access.
@@ -254,13 +348,15 @@ function buildInstalledMcpLaunchPlan({ registration, registrationPath, projectRo
       socketPath: paths.join(dataRoot, ".ts", `mcp-${hash}.sock`) });
   }
   if (platform === "linux") {
-    // Linux AppImage lane (P12). The AppImage file is the one stable path: the app inside it is mounted
-    // under /tmp at a new path on every launch, so no mount path is trusted. The AppImage's AppRun turns
-    // a leading "@app/" argument into a path inside its own mount.
+    // Linux packaged lane (P12). The AppImage file, or the package's fixed launcher (the snap's /snap/bin/truthspine), is
+    // the one stable path: the app inside an AppImage is mounted under /tmp at a new path on every launch, and a snap's
+    // folder changes with each update, so no path inside the package is trusted. The package's own entry point (AppRun,
+    // the snap's truthspine-launch) turns a leading "@app/" argument into a path inside it.
     const provenance = registration.runtimeProvenance;
     const command = absolute(registration.command, paths);
-    if (!object(provenance) || provenance.packaged !== true || provenance.packagedPlatform !== "linux-appimage"
-      || !/[.]AppImage$/.test(paths.basename(command))
+    const fixed = object(provenance) ? linuxPackageCommand(provenance.packagedPlatform) : null;
+    if (!object(provenance) || provenance.packaged !== true
+      || !(provenance.packagedPlatform === "linux-appimage" ? /[.]AppImage$/.test(paths.basename(command)) : fixed !== null && command === fixed)
       || !equal(absolute(provenance.appExecutable, paths), command, platform)) fail();
     return Object.freeze({ mode: "installed-stdio", platform, hostId, packageRoot: LINUX_APP_ROOT, command,
       args: Object.freeze([`${LINUX_APP_ROOT}/src/mcp-server.js`]), cwd: root ?? profile, projectRoot: root, truthHome: profile,
@@ -465,10 +561,50 @@ function relayDelegationPlan({ platform = process.platform, execPath = process.e
     env: { ...env, ELECTRON_RUN_AS_NODE: "1", TRUTHSPINE_PACKAGED_RUNTIME: "1" } };
 }
 
-async function startInstalledMcpLauncherWithRecovery({ signal } = {}) {
-  if (signal?.aborted) fail();
-  const delegated = relayDelegationPlan();
-  if (delegated) return relayInstalledMcp(delegated);
+// One process per chat (design approved 2026-10-21; owner: "Keep one runtime, measured budget"). When this launcher
+// already runs in the very package its validated plan would start (the same AppImage on Linux, the same Store package
+// on Windows), it becomes the chat server itself: the plan's environment exactly, plus the few keys the runtime needs,
+// then the package's own mcp-server.js in this process. A second Electron-as-node is no longer started for each chat.
+// It still starts one when this launcher runs on another runtime (an app's own Node, the relay), when it was started
+// with NODE_OPTIONS, NODE_PATH or Node flags (they would reach the server, which the clean environment keeps out), or
+// for the Mac's app-owned socket, which starts no server.
+const IN_PLACE_RUNTIME_KEYS = Object.freeze({
+  linux: Object.freeze(["APPIMAGE", "APPDIR", "ARGV0", "OWD", "TRUTHSPINE_PACKAGED_PLATFORM"]),
+  win32: Object.freeze([])
+});
+function inPlaceHandover(plan, { platform = process.platform, execPath = process.execPath, env = process.env,
+  execArgv = process.execArgv, exists = file => { try { return fs.statSync(file).isFile(); } catch { return false; } } } = {}) {
+  if (!plan || plan.mode !== "installed-stdio" || plan.platform !== platform || !IN_PLACE_RUNTIME_KEYS[platform]) return null;
+  if (env.ELECTRON_RUN_AS_NODE !== "1" || (env.NODE_OPTIONS ?? "") !== "" || (env.NODE_PATH ?? "") !== "" || execArgv.length) return null;
+  const paths = platform === "win32" ? path.win32 : path.posix;
+  let serverPath;
+  if (platform === "linux") {
+    const sameAppImage = typeof env.APPIMAGE === "string" && paths.isAbsolute(env.APPIMAGE) && equal(paths.resolve(env.APPIMAGE), plan.command, platform);
+    if (!sameAppImage && linuxPackageCommand(env.TRUTHSPINE_PACKAGED_PLATFORM) !== plan.command) return null;
+    if (plan.args[0] !== `${LINUX_APP_ROOT}/src/mcp-server.js`) return null;
+    serverPath = paths.join(paths.dirname(execPath), "resources", "app", "src", "mcp-server.js");
+  } else {
+    if (!equal(paths.join(paths.dirname(execPath), "resources", "app"), plan.packageRoot, platform)) return null;
+    serverPath = paths.join(plan.packageRoot, "src", "mcp-server.js");
+    if (!equal(plan.args[0], serverPath, platform)) return null;
+  }
+  if (!exists(serverPath)) return null;
+  const next = { ...plan.env };
+  for (const key of IN_PLACE_RUNTIME_KEYS[platform]) if (typeof env[key] === "string") next[key] = env[key];
+  return Object.freeze({ serverPath, cwd: plan.cwd, env: Object.freeze(next) });
+}
+// The handover itself: nothing of this launcher's own start environment is left, and the server runs as its own entry.
+async function handOverInPlace(handover, { importer = file => import(require("node:url").pathToFileURL(file).href) } = {}) {
+  for (const key of Object.keys(process.env)) if (!Object.prototype.hasOwnProperty.call(handover.env, key)) delete process.env[key];
+  Object.assign(process.env, handover.env);
+  process.chdir(handover.cwd);
+  process.argv[1] = handover.serverPath;
+  await importer(handover.serverPath);
+  return { inPlace: true };
+}
+
+// The installed copy's plan, validated; Windows tries the Store package again when the recorded one is gone.
+async function installedPlan(signal) {
   const options = installedLauncherOptions();
   let plan = buildInstalledMcpLaunchPlan(options);
   try { validateInstalledLaunchPlan(plan); }
@@ -476,8 +612,193 @@ async function startInstalledMcpLauncherWithRecovery({ signal } = {}) {
     if (plan.platform !== 'win32') throw error;
     plan = (await prepareRecoveredMcpPlan(options, { signal })).plan;
   }
+  return plan;
+}
+
+// With no TruthSpine to reach (B8, Brain 2026-11-01): the connection stays up and answers by itself, so the chat can say
+// "TruthSpine isn't installed yet. Get it here: <link>" instead of the app showing a server that failed. The page opens
+// only when the chat calls open_download_page after the person says yes, and once TruthSpine is there the next tool call
+// connects this same chat to it (the person's first message is passed on, and the app is told the tools changed).
+// A copy that starts but does not answer within NO_ANSWER_MS is given up the same way.
+const NO_ANSWER_MS = 10000;
+const LAUNCHER_GET_LINKS = Object.freeze({ ...LAUNCHER_STORE_LINKS, linux: "https://truthspine.app/download/linux" });
+const DOWNLOAD_PAGE = "https://truthspine.app/download";
+function noAppLines(code, platform) {
+  const link = LAUNCHER_GET_LINKS[platform] || DOWNLOAD_PAGE;
+  if (code === "app_not_installed") return { link, say: `TruthSpine isn't installed yet. Get it here: ${link}`,
+    next: "Ask the person whether to open this page now, and call open_download_page only if they say yes. Once TruthSpine is installed and open, call attach again: this chat then connects by itself." };
+  const say = code === "app_not_opened" ? "Open TruthSpine once. It is installed on this computer but has not been opened yet, so chats can't reach it."
+    : code === "app_not_running" ? "TruthSpine is installed but not running. Open the TruthSpine app, then ask again."
+    : "TruthSpine is installed but did not answer. Open the TruthSpine app, then ask again.";
+  return { link: null, say, next: "Once it is open, call attach again: this chat then connects by itself." };
+}
+function openPage(url, platform, spawnImpl = spawn) {
+  const [command, args] = platform === "win32" ? ["explorer.exe", [url]] : platform === "darwin" ? ["open", [url]] : ["xdg-open", [url]];
+  const child = spawnImpl(command, args, { detached: true, stdio: "ignore", windowsHide: true, shell: false });
+  child.on("error", () => {}); child.unref();
+}
+// Newline-framed JSON-RPC lines from a stream (MCP over standard input and output).
+function readLines(stream, onLine) {
+  let pending = "";
+  const onData = chunk => {
+    pending += chunk.toString("utf8");
+    let end;
+    while ((end = pending.indexOf("\n")) !== -1) { const line = pending.slice(0, end).replace(/\r$/, ""); pending = pending.slice(end + 1); if (line.trim()) onLine(line); }
+  };
+  stream.on("data", onData);
+  return () => stream.removeListener("data", onData);
+}
+const parse = line => { try { const message = JSON.parse(line); return object(message) ? message : null; } catch { return null; } };
+
+// Relays to the installed copy, and gives it up when it does not answer the app's first request in time (onSilent gets the
+// lines it was sent). Lines come in through send(); the copy's answers go to output, the swallowed id's answer excepted.
+function answeredRelay(plan, { output, waitMs = NO_ANSWER_MS, onSilent, onAnswered = () => {}, swallowId = null, relay = relayInstalledMcp }) {
+  const { PassThrough } = require("node:stream");
+  const toCopy = new PassThrough(), fromCopy = new PassThrough();
+  const sent = [];
+  let waitingFor = undefined, answered = false, gaveUp = false, timer = null;
+  const connection = relay(plan, { input: toCopy, output: fromCopy });
+  function giveUp() {
+    if (gaveUp) return;
+    gaveUp = true; clearTimeout(timer); stopReading(); connection.stop(1);
+    onSilent(sent.slice());
+  }
+  const stopReading = readLines(fromCopy, line => {
+    if (gaveUp) return;
+    const message = parse(line);
+    if (message && !answered && waitingFor !== undefined && message.id === waitingFor) { answered = true; clearTimeout(timer); onAnswered(); }
+    if (message && swallowId !== null && message.id === swallowId) return;
+    output.write(line + "\n");
+  });
+  // (a copy that ends before it answered is given up too)
+  connection.closed.then(result => { if (!answered && !gaveUp && result.code !== 0) giveUp(); });
+  return {
+    connection,
+    send(line) {
+      if (gaveUp) return false;
+      // (the wait starts with the app's first request: an app may start the connection long before it asks anything)
+      if (waitingFor === undefined) {
+        const message = parse(line);
+        if (message && message.id !== undefined && message.id !== null) { waitingFor = message.id; timer = setTimeout(() => { if (!answered) giveUp(); }, waitMs); }
+      }
+      if (!answered) sent.push(line);
+      toCopy.write(line + "\n");
+      return true;
+    },
+    end() { if (!gaveUp) { clearTimeout(timer); toCopy.end(); } },
+    gaveUp: () => gaveUp
+  };
+}
+
+function serveWithoutApp(code, { input = process.stdin, output = process.stdout, platform = process.platform, attempt,
+  waitMs = NO_ANSWER_MS, spawnImpl = spawn, retryEveryMs = 10000, now = () => Date.now(), relay = relayInstalledMcp, earlier = [] } = {}) {
+  let resolveClosed, live = null, init = null, lastTry = -Infinity, trying = null, done = false;
+  const closed = new Promise(resolve => { resolveClosed = resolve; });
+  const write = message => output.write(JSON.stringify(message) + "\n");
+  const lines = () => noAppLines(code, platform);
+  const finish = codeOut => { if (done) return; done = true; stopReading(); input.removeListener("end", ended); resolveClosed({ code: codeOut, pid: null, cleanupConfirmed: true }); };
+  const ended = () => { if (live) { live.end(); live.connection.closed.then(result => finish(result.code)); } else finish(0); };
+  const tools = () => [{ name: "attach", description: `Connect TruthSpine. ${lines().say}`, inputSchema: { type: "object", properties: {}, additionalProperties: true } }]
+    .concat(code === "app_not_installed" ? [{ name: "open_download_page", description: "Open the TruthSpine download page in the browser. Call it only after the person says yes.",
+      inputSchema: { type: "object", properties: {}, additionalProperties: false } }] : []);
+  const answer = message => {
+    const { method, id } = message;
+    const reply = result => { if (id !== undefined && id !== null) write({ jsonrpc: "2.0", id, result }); };
+    if (method === "initialize") {
+      init = message;
+      return reply({ protocolVersion: (message.params && message.params.protocolVersion) || "2025-06-18", capabilities: { tools: { listChanged: true } },
+        serverInfo: { name: "truthspine", version: "not-connected" }, instructions: `${lines().say} ${lines().next}` });
+    }
+    if (method === "tools/list") return reply({ tools: tools() });
+    if (method === "resources/list") return reply({ resources: [] });
+    if (method === "prompts/list") return reply({ prompts: [] });
+    if (method === "ping") return reply({});
+    if (method === "tools/call") {
+      const name = message.params && message.params.name;
+      if (name === "open_download_page" && code === "app_not_installed") {
+        try { openPage(lines().link, platform, spawnImpl); return reply({ content: [{ type: "text", text: `Opened ${lines().link}. ${lines().next}` }] }); }
+        catch { return reply({ content: [{ type: "text", text: `Could not open the page. The link is ${lines().link}.` }] }); }
+      }
+      return reply({ content: [{ type: "text", text: `${lines().say} ${lines().next}` }] });
+    }
+    if (typeof method === "string" && method.indexOf("notifications/") === 0) return undefined;
+    if (id !== undefined && id !== null) write({ jsonrpc: "2.0", id, error: { code: -32601, message: lines().say } });
+    return undefined;
+  };
+  // Once TruthSpine is there: the copy gets the app's first request under its own id (its answer is not passed on, the app
+  // has one already), the initialized notice, then the waiting call; the app hears that the tools changed.
+  async function connect(callLine) {
+    let plan;
+    try { plan = await attempt(); } catch (error) { const next = typedCode(error); if (next && next !== code && next !== "unavailable") code = next; return false; }
+    if (done) return false;
+    const handoverId = `truthspine-handover-${crypto.randomUUID()}`;
+    let copy = null;
+    const outcome = new Promise(resolve => {
+      copy = answeredRelay(plan, { output, waitMs, relay, swallowId: handoverId, onAnswered: () => resolve("answered"),
+        onSilent: () => { code = "app_not_answering"; resolve("silent"); } });
+    });
+    const first = init ? { ...init, id: handoverId } : { jsonrpc: "2.0", id: handoverId, method: "initialize",
+      params: { protocolVersion: "2025-06-18", capabilities: {}, clientInfo: { name: "truthspine-launcher", version: "1" } } };
+    copy.send(JSON.stringify(first));
+    if (await outcome !== "answered" || done) { if (!copy.gaveUp()) copy.connection.stop(1); return false; }
+    copy.send(JSON.stringify({ jsonrpc: "2.0", method: "notifications/initialized" }));
+    live = copy;
+    copy.connection.closed.then(result => finish(result.code));
+    write({ jsonrpc: "2.0", method: "notifications/tools/list_changed" });
+    live.send(callLine);
+    return true;
+  }
+  const onLine = line => {
+    if (live) { live.send(line); return; }
+    const message = parse(line);
+    if (!message) return;
+    if (message.method === "tools/call" && !trying && now() - lastTry >= retryEveryMs && !(message.params && message.params.name === "open_download_page")) {
+      lastTry = now();
+      trying = connect(line).then(connected => { trying = null; if (!connected) answer(message); }, () => { trying = null; answer(message); });
+      return;
+    }
+    if (trying) { trying.then(() => onLine(line)); return; }
+    answer(message);
+  };
+  for (const line of earlier) onLine(line);
+  const stopReading = readLines(input, onLine);
+  input.once("end", ended);
+  if (input.readableEnded) ended();
+  return { closed, stop: codeOut => finish(codeOut || 0), pid: null, failure: () => code, withoutApp: true };
+}
+
+async function startInstalledMcpLauncherWithRecovery({ signal, inPlace = handOverInPlace, input = process.stdin, output = process.stdout,
+  waitMs = NO_ANSWER_MS, relay = relayInstalledMcp } = {}) {
   if (signal?.aborted) fail();
-  return relayInstalledMcp(plan);
+  const delegated = relayDelegationPlan();
+  if (delegated) return relayInstalledMcp(delegated);
+  let plan;
+  try { plan = await installedPlan(signal); }
+  catch (error) {
+    const code = typedCode(error);
+    if (!["app_not_installed", "app_not_opened", "app_not_running"].includes(code)) throw error;
+    return serveWithoutApp(code, { input, output, waitMs, relay, attempt: () => installedPlan(signal) });
+  }
+  if (signal?.aborted) fail();
+  // (only a plan that passed validation is ever handed over)
+  const handover = inPlaceHandover(plan);
+  if (handover) return inPlace(handover);
+  if (plan.mode !== "installed-stdio") return relayInstalledMcp(plan);
+  // A copy that does not answer the app's first request in time is given up, and this connection answers by itself.
+  let resolveClosed, without = null;
+  const closed = new Promise(resolve => { resolveClosed = resolve; });
+  let watched;
+  const stopReading = readLines(input, line => { if (without) return; watched.send(line); });
+  const ended = () => { if (!without) watched.end(); };
+  watched = answeredRelay(plan, { output, waitMs, relay, onSilent: sent => {
+    stopReading(); input.removeListener("end", ended);
+    without = serveWithoutApp("app_not_answering", { input, output, waitMs, relay, attempt: () => installedPlan(signal), earlier: sent });
+    without.closed.then(resolveClosed);
+  } });
+  input.once("end", ended);
+  watched.connection.closed.then(result => { if (!watched.gaveUp()) { stopReading(); resolveClosed(result); } });
+  return { closed, stop: code => (without ? without.stop(code) : watched.connection.stop(code)), pid: watched.connection.pid,
+    failure: () => (without ? without.failure() : watched.connection.failure()) };
 }
 
 // Store package discovery stays in this single-file thin transport so generated
@@ -610,17 +931,22 @@ async function prepareRecoveredInstalledPlan(initial, signal) {
     recovered: selected.version !== registered[1] });
 }
 
-module.exports = { readRegistration, resolveBoundedHostWorkspace, neverAProjectFolder, launcherProjectRoot, buildInstalledMcpLaunchPlan, buildInstalledCliLaunchPlan,
+module.exports = { HOST_IDS, HOST_TOOL_PROFILES, LINUX_PACKAGE_COMMANDS, readRegistration, resolveBoundedHostWorkspace, neverAProjectFolder, scratchFolder, launcherProjectRoot, buildInstalledMcpLaunchPlan, buildInstalledCliLaunchPlan,
   validateInstalledLaunchPlan, restrictiveTelemetryEnv, relayInstalledMcp, relayDelegationPlan, startInstalledMcpLauncher,
   startInstalledMcpLauncherWithRecovery, qualifyCurrentStorePackage, discoverCurrentStorePackage, prepareRecoveredMcpPlan, prepareRecoveredCliPlan,
-  LAUNCHER_RESULTS, LAUNCHER_STORE_LINKS, describeLauncherFailure };
+  LAUNCHER_RESULTS, LAUNCHER_STORE_LINKS, LAUNCHER_GET_LINKS, installedAppPresent, NO_ANSWER_MS, describeLauncherFailure, serveWithoutApp, answeredRelay, inPlaceHandover, handOverInPlace, IN_PLACE_RUNTIME_KEYS };
 if (require.main === module) {
   const controller = new AbortController();
   let connection;
   const stop = () => { controller.abort(); connection?.stop(1); };
   process.once("SIGINT", stop); process.once("SIGTERM", stop);
   (async () => {
-    connection = await startInstalledMcpLauncherWithRecovery({ signal: controller.signal });
+    connection = await startInstalledMcpLauncherWithRecovery({ signal: controller.signal, inPlace: handover => {
+      // (from here this process is the chat server, which handles its own stop: mcp-server.js)
+      process.removeListener("SIGINT", stop); process.removeListener("SIGTERM", stop);
+      return handOverInPlace(handover);
+    } });
+    if (connection.inPlace) return;
     connection.closed.then(result => {
       process.removeListener("SIGINT", stop); process.removeListener("SIGTERM", stop);
       if (result.code !== 0) {

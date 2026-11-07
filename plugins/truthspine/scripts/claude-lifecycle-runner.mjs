@@ -9,6 +9,17 @@ import { executeInstalledMcpCommand } from "./installed-mcp-command.mjs";
 const plans = new WeakMap();
 const MESSAGE = "TruthSpine automatic attachment was not confirmed. Open the installed app and reconnect this workspace. Do not purchase again or assume a failed attachment made no changes.";
 const fail = () => { throw new Error(MESSAGE); };
+// Why the hook failed, after its sentence (0b (1), Brain 2026-11-01: the Code tab's hook said only MESSAGE, so its cause
+// could not be named): the error's code, its words when they are not one of the customer sentences, and where it stopped
+// (functions and lines, never a path). The same as the launchers' STARTUP_CAUSE_LINES (surface-connector-runtime.js);
+// written out here, since this file ships alone in the plugin.
+export function failureCause(error) {
+  const said = (value, most) => String(value ?? "").replace(/[\u0000-\u001f\u007f]+/g, " ").replace(/(?:[A-Za-z]:)?[\\/][^\s'"`]+/g, "[path]").trim().slice(0, most);
+  const where = String(error?.stack ?? "").split("\n").slice(1).map(frame => /at (?:async )?([\w.$<>]+) \(.*?([\w.-]+):(\d+):\d+\)$/.exec(frame.trim()))
+    .filter(Boolean).slice(0, 3).map(([, name, file, line]) => `${name} ${file}:${line}`).join(" < ");
+  const words = /purchase is not affected|do not purchase again/i.test(String(error?.message ?? "")) ? "" : said(error?.message ?? error, 400);
+  return [said(error?.code, 80), words, where && `at ${where}`].filter(Boolean).join(": ");
+}
 
 export function buildClaudeLifecyclePlan(input, { registrationPath, homeDir = os.homedir(),
   platform = process.platform, env = process.env } = {}) {
@@ -77,6 +88,6 @@ if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) 
     const plan = buildClaudeLifecyclePlan(input, { registrationPath });
     const result = await executeClaudeLifecyclePlan(plan, { signal: controller.signal });
     process.stdout.write(JSON.stringify(result) + "\n");
-  } catch { process.stderr.write(MESSAGE + "\n"); process.exitCode = 1; }
+  } catch (error) { const cause = failureCause(error); process.stderr.write(`${MESSAGE}${cause ? ` Cause: ${cause}` : ""}\n`); process.exitCode = 1; }
   finally { process.removeListener("SIGINT", stop); process.removeListener("SIGTERM", stop); }
 }
