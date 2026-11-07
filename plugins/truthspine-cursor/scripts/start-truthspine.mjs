@@ -19,12 +19,15 @@ try {
   // A public package carries no machine-specific path: use where the installed app records itself.
   process.env.TRUTHSPINE_RUNTIME_REGISTRATION_PATH = contract.defaultRuntimeRegistrationPath();
   connection = await launcher.startInstalledMcpLauncherWithRecovery({ signal: controller.signal });
-  const result = await connection.closed;
-  process.exitCode = result.code;
-} catch {
+  if (!connection?.inPlace) { const result = await connection.closed; process.exitCode = result.code; } // (in place: the app's server runs here)
+} catch (error) {
   const guidance = startupStage === "workspace-binding"
     ? "The host did not provide a usable bounded project directory. Open the intended project and reconnect its workspace-scoped TruthSpine connector. Licensing has not been checked; do not sign in or purchase to resolve this workspace error."
     : "Open the installed TruthSpine app and reconnect the project. This startup error alone does not establish a licensing failure.";
-  process.stderr.write(`TruthSpine startup failed at ${startupStage}. ${guidance} No checkout fallback is allowed.\n`);
+  const said = (value, most) => String(value ?? "").replace(/[\u0000-\u001f\u007f]+/g, " ").replace(/(?:[A-Za-z]:)?[\\/][^\s'"`]+/g, "[path]").trim().slice(0, most);
+  const where = String(error?.stack ?? "").split("\n").slice(1).map(frame => /at (?:async )?([\w.$<>]+) \(.*?([\w.-]+):(\d+):\d+\)$/.exec(frame.trim())).filter(Boolean).slice(0, 3).map(([, name, file, line]) => `${name} ${file}:${line}`).join(" < ");
+  const words = /purchase is not affected/i.test(String(error?.message ?? "")) ? "" : said(error?.message ?? error, 400);
+  const cause = [said(error?.code, 80), words, where && `at ${where}`].filter(Boolean).join(": ");
+  process.stderr.write(`TruthSpine startup failed at ${startupStage}. ${guidance} No checkout fallback is allowed.${cause ? ` Cause: ${cause}` : ""}\n`);
   process.exitCode = 1;
 } finally { process.removeListener("SIGINT", stop); process.removeListener("SIGTERM", stop); }
