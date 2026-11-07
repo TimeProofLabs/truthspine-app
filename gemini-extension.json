@@ -1,7 +1,7 @@
 {
   "name": "truthspine",
-  "version": "0.2.0",
-  "description": "The keeper of your projects. You lead the work. TruthSpine keeps the truth automatically. Every connected chat starts already knowing your project. Your project stays on your computer.",
+  "version": "0.2.2",
+  "description": "Stop re-explaining your project to every new AI chat. It works on your computer, with no cloud account and nothing extra to install. Every connected chat checks your project before it answers, so you never re-explain it.",
   "contextFileName": "GEMINI.md",
   "mcpServers": {
     "truthspine": {
