@@ -2,8 +2,8 @@
   "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
   "name": "app.truthspine/truthspine",
   "title": "TruthSpine",
-  "description": "Every connected AI chat starts already knowing your project. One checked record, on your computer.",
-  "version": "0.2.0",
+  "description": "Every chat checks your project before it answers. Needs the TruthSpine app: truthspine.app/download",
+  "version": "0.2.2",
   "websiteUrl": "https://truthspine.app/",
   "repository": {
     "url": "https://github.com/TimeProofLabs/truthspine-app",
@@ -12,8 +12,8 @@
   "packages": [
     {
       "registryType": "mcpb",
-      "identifier": "https://github.com/TimeProofLabs/truthspine-app/releases/download/v0.2.0/truthspine-0.2.0.mcpb",
-      "fileSha256": "90578d7ab26924ff018e79d443c4b5bcbd95376ea9fa8bf348bb9608b1904152",
+      "identifier": "https://github.com/TimeProofLabs/truthspine-app/releases/download/v0.2.2/truthspine-0.2.2.mcpb",
+      "fileSha256": "14356f984f051172a20cc2f8cb00023d2553dbefefdb14c69eefafd14b35c455",
       "transport": {
         "type": "stdio"
       }
@@ -21,7 +21,7 @@
     {
       "registryType": "npm",
       "identifier": "@timeprooflabs/truthspine-mcp",
-      "version": "0.2.0",
+      "version": "0.2.2",
       "runtimeHint": "npx",
       "transport": {
         "type": "stdio"

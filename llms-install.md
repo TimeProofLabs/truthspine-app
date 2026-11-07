@@ -21,5 +21,5 @@ TruthSpine's MCP server is part of the TruthSpine desktop app; there is nothing 
      ```
 
      On Windows, if `npx` does not start, use `"command": "cmd"` with `"args": ["/c", "npx", "-y", "@timeprooflabs/truthspine-mcp", "--host", "cline", "--project", "<the open project folder>"]`.
-3. Reload your MCP servers, confirm a server named `truthspine` is connected, then call `truthspine_attach` (the user's phrase for this is "Attach TruthSpine").
+3. Reload your MCP servers, confirm a server named `truthspine` is connected, then call `attach` (the user's phrase for this is "Attach TruthSpine").
 4. Never put passwords, keys or tokens into TruthSpine.

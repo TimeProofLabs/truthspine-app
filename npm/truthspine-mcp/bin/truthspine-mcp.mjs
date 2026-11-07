@@ -26,12 +26,15 @@ try {
   startupStage = "installed-runtime-start";
   process.env.TRUTHSPINE_RUNTIME_REGISTRATION_PATH = contract.defaultRuntimeRegistrationPath();
   connection = await launcher.startInstalledMcpLauncherWithRecovery({ signal: controller.signal });
-  const result = await connection.closed;
-  process.exitCode = result.code;
-} catch {
+  if (!connection?.inPlace) { const result = await connection.closed; process.exitCode = result.code; }
+} catch (error) {
   const guidance = startupStage === "workspace-binding"
     ? "Start it inside your project folder or pass --project <folder>. Licensing has not been checked; do not sign in or purchase to resolve this."
     : "Install and open the TruthSpine app, connect this project in it, and check --host names your tool. This startup error alone does not establish a licensing failure.";
-  process.stderr.write(`TruthSpine startup failed at ${startupStage}. ${guidance}\n`);
+  const said = (value, most) => String(value ?? "").replace(/[\u0000-\u001f\u007f]+/g, " ").replace(/(?:[A-Za-z]:)?[\\/][^\s'"`]+/g, "[path]").trim().slice(0, most);
+  const where = String(error?.stack ?? "").split("\n").slice(1).map(frame => /at (?:async )?([\w.$<>]+) \(.*?([\w.-]+):(\d+):\d+\)$/.exec(frame.trim())).filter(Boolean).slice(0, 3).map(([, name, file, line]) => `${name} ${file}:${line}`).join(" < ");
+  const words = /purchase is not affected/i.test(String(error?.message ?? "")) ? "" : said(error?.message ?? error, 400);
+  const cause = [said(error?.code, 80), words, where && `at ${where}`].filter(Boolean).join(": ");
+  process.stderr.write(`TruthSpine startup failed at ${startupStage}. ${guidance}${cause ? ` Cause: ${cause}` : ""}\n`);
   process.exitCode = 1;
 } finally { process.removeListener("SIGINT", stop); process.removeListener("SIGTERM", stop); }

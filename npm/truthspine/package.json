@@ -1,0 +1,60 @@
+{
+  "name": "truthspine",
+  "version": "0.2.2",
+  "description": "Stop re-explaining your project to every new AI chat. MCP connector for TruthSpine: gives AI agents a checked, local record of your project (decisions, work done, failures, next steps). Works on your computer. No cloud account. Needs the TruthSpine app.",
+  "license": "Apache-2.0",
+  "author": {
+    "name": "TimeProofLabs",
+    "email": "support@truthspine.app",
+    "url": "https://truthspine.app/"
+  },
+  "homepage": "https://truthspine.app/",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/TimeProofLabs/truthspine-app.git"
+  },
+  "bugs": {
+    "url": "https://truthspine.app/support"
+  },
+  "keywords": [
+    "truthspine",
+    "mcp",
+    "model-context-protocol",
+    "model context protocol",
+    "project memory",
+    "ai memory",
+    "agent memory",
+    "persistent memory",
+    "persistent context",
+    "cross-session context",
+    "context management",
+    "project context",
+    "project truth",
+    "decision log",
+    "decisions",
+    "ai agents",
+    "coding agents",
+    "claude code",
+    "claude desktop",
+    "cursor",
+    "windsurf",
+    "cline",
+    "codex",
+    "copilot",
+    "local-first"
+  ],
+  "mcpName": "app.truthspine/truthspine",
+  "type": "module",
+  "bin": {
+    "truthspine-mcp": "bin/truthspine-mcp.mjs"
+  },
+  "files": [
+    "bin/",
+    "lib/",
+    "README.md",
+    "LICENSE"
+  ],
+  "engines": {
+    "node": ">=18"
+  }
+}

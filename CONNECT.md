@@ -8,7 +8,7 @@ TruthSpine is a desktop app that keeps your project's decisions, finished work, 
 | Cursor | Add TruthSpine from the Cursor Marketplace. |
 | VS Code, VSCodium, Windsurf and other Open VSX editors | Install "TruthSpine - Project Memory for AI Coding Agents" from the Visual Studio Marketplace or Open VSX. |
 | JetBrains IDEs | Install "TruthSpine - Project Memory for AI Coding Agents" from JetBrains Marketplace. |
-| Any app that installs MCP bundles | Download `truthspine-0.2.1.mcpb` from this repository's releases. In Claude Desktop, open Settings, then Extensions, and drag the file onto "Drag .MCPB or .DXT files here to install". Then say "Connect TruthSpine" in a chat. |
+| Any app that installs MCP bundles | Download `truthspine-0.2.2.mcpb` from this repository's releases. In Claude Desktop, open Settings, then Extensions, and drag the file onto "Drag .MCPB or .DXT files here to install". Then say "Connect TruthSpine" in a chat. |
 | Cline, Zed, Kiro, LM Studio, OpenCode, Codex and others | In the TruthSpine app, open Connections and choose the tool; the app writes that tool's settings for the project. |
 | Any other MCP tool | Add a server that runs `npx -y @timeprooflabs/truthspine-mcp --host <tool>` in your project folder (or add `--project <folder>`). |
 

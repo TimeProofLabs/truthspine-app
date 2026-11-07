@@ -16,7 +16,7 @@ function buildClaudeSessionStartRequest(input, { homeDir, platform = process.pla
     || event.session_id.length > 2048 || /[\u0000-\u001f\u007f]/.test(event.session_id)) fail();
   const { projectRoot } = launcher.resolveBoundedHostWorkspace({ cwd: event.cwd, homeDir, platform });
   return Object.freeze({
-    tool: "truthspine_onboard_chat",
+    tool: "onboard_chat",
     // Host/workspace are fixed by the transport, not overridable tool selectors.
     // Older catalogs reject identityMode before tools/call, preventing silent
     // fallback to the old per-attachment/title-derived chat identity.
@@ -28,7 +28,7 @@ function buildClaudeSessionStartRequest(input, { homeDir, platform = process.pla
 
 function formatClaudeSessionStartResult(request, result) {
   const metrics = result?.metrics;
-  if (!request || request.tool !== "truthspine_onboard_chat"
+  if (!request || request.tool !== "onboard_chat"
     || result?.project?.projectRoot !== request.projectRoot
     || result?.binding?.hostSurface !== "claude-code"
     || result?.binding?.hostChatIdHash !== request.sessionIdHash
@@ -36,19 +36,31 @@ function formatClaudeSessionStartResult(request, result) {
     || typeof metrics?.label !== "string" || !/^[a-z0-9][a-z0-9_-]{0,255}$/.test(metrics.label)
     || metrics.runId !== metrics.label || metrics.sourceRef !== metrics.label
     || !/^[a-f0-9]{32}$/.test(metrics.chatSessionFingerprint || "")) fail();
-  const readScope = { chatId: metrics.label, chatSessionFingerprint: metrics.chatSessionFingerprint };
-  const syncIdentity = { runId: metrics.label, sourceRef: metrics.label,
-    chatSessionFingerprint: metrics.chatSessionFingerprint };
-  return {
-    hookSpecificOutput: { hookEventName: "SessionStart", additionalContext: [
-      "TruthSpine has returned this session's workspace-bound attachment identity.",
-      `Use this readScope for project-dependent TruthSpine reads: ${JSON.stringify(readScope)}.`,
-      `Use this identity for governed session updates: ${JSON.stringify(syncIdentity)}.`,
-      `For an explicit Attach TruthSpine request in this same host session/workspace, call truthspine_onboard_chat with these exact arguments: ${JSON.stringify(request.arguments)}. Never replace them with an empty object or a guessed title/ID.`,
-      "Consult truthspine_answer_guard before project-dependent answers and actions. Persist meaningful work deltas through governed session updates using this same identity; do not copy another chat's identity.",
-      "These identifiers provide attribution, not owner authorization or proof that reported work is correct."
-    ].join("\n") }
-  };
+  const identity = [
+    "TruthSpine has returned this session's workspace-bound attachment identity.",
+    `For an explicit Attach TruthSpine request in this same host session/workspace, call attach with these exact arguments: ${JSON.stringify(request.arguments)}. Never replace them with an empty object or a guessed title/ID.`,
+    "Consult answer_guard before project-dependent answers and actions. Save meaningful work with record; do not copy another chat's identity.",
+    "These identifiers provide attribution, not owner authorization or proof that reported work is correct."
+  ].join("\n");
+  return { hookSpecificOutput: { hookEventName: "SessionStart", additionalContext: withProjectPacket(identity, result?.packet?.text) } };
+}
+// The session starts with the project itself (B2, Brain 2026-11-01: "every new session starts already knowing my project"
+// was true nowhere, since the hook gave only the identity): the connect reply's packet follows the identity lines. Claude
+// Code keeps a hook's text to 10,000 characters and shows only a short preview of anything longer, so the whole text stays
+// under HOOK_CONTEXT_LIMIT, the packet cut at a whole line with a pointer to the rest.
+const HOOK_CONTEXT_LIMIT = 9500;
+function withProjectPacket(identity, packet) {
+  const text = typeof packet === "string" ? packet.replace(/[\u0000-\u0008\u000b-\u001f\u007f]/g, "").trim() : "";
+  if (!text) return identity;
+  const head = `${identity}\n\nThis project, as TruthSpine keeps it now:\n`;
+  const rest = "\n(Shortened here; consult answer_guard for the rest.)";
+  if (head.length + text.length <= HOOK_CONTEXT_LIMIT) return head + text;
+  let kept = "";
+  for (const line of text.split("\n")) {
+    if (head.length + kept.length + line.length + 1 + rest.length > HOOK_CONTEXT_LIMIT) break;
+    kept += `${kept ? "\n" : ""}${line}`;
+  }
+  return kept ? head + kept + rest : identity;
 }
 // Where the installed app records itself (the same place the app writes it). Used when a
 // public connector carries no machine-specific path; an explicit setting still wins.
