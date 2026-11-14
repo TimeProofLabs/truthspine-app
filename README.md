@@ -25,7 +25,7 @@ Open TruthSpine and go to **Connections**. It lists the AI apps on your computer
 You can also add TruthSpine from your tool:
 
 - **Claude Code:** `/plugin marketplace add TimeProofLabs/truthspine-app`, then `/plugin install truthspine@timeprooflabs`
-- **Cursor:** add TruthSpine from the Cursor Marketplace
+- **Cursor:** in the TruthSpine app, open **Connections** and choose Cursor; the app writes Cursor's settings for the project. Then open a new chat in Cursor
 - **VS Code and Open VSX editors:** "TruthSpine - Project Memory for AI Coding Agents" from the Visual Studio Marketplace or Open VSX
 - **JetBrains IDEs:** "TruthSpine - Project Memory for AI Coding Agents" from JetBrains Marketplace
 - **Any other MCP tool:** a server named `truthspine` that runs `npx -y @timeprooflabs/truthspine-mcp --host <tool> --project <folder>`
