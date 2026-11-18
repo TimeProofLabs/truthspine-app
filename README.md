@@ -2,9 +2,11 @@
 
 # TruthSpine
 
-**Stop re-explaining your project to every new AI chat. It works on your computer, with no cloud account and nothing extra to install.**
+**TruthSpine is your project's memory, kept on your computer and shared by every AI tool you connect, so no new chat starts from zero.**
 
-Every connected chat checks your project before it answers, so you never re-explain it. TruthSpine keeps one checked record of what was decided, what was done, what failed, and what comes next.
+Every new AI chat forgets your project, so you explain it again. TruthSpine keeps one record of it on your own computer: what was decided, what's done, what's next, and the evidence for each. You don't write that record; your AI chats add to it as they work, and TruthSpine reads your project's own files. Every AI tool you connect, from Claude and ChatGPT to Cursor and 16 more, works from the same record. It uses no AI of its own, so it never spends your AI allowance by itself.
+
+This connector needs the TruthSpine app: [truthspine.app/download](https://truthspine.app/download)
 
 You lead the work. TruthSpine keeps the truth.
 
